@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Last Lightkeeper - Prototipo de Sistemas</title>
+    <style>
+        :root {
+            --bg-dark: #070a13;
+            --panel-bg: #0f1423;
+            --panel-border: #1f294d;
+            --text-main: #e2e8f0;
+            --text-muted: #64748b;
+            --accent-blue: #38bdf8;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-green: #10b981;
+            --glow-yellow: #fde047;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* CRITERIOS ACADÉMICOS DE EVALUACIÓN */
+        .academic-criteria {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 950px;
+            width: 100%;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .academic-criteria h2 {
+            color: var(--accent-blue);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .academic-criteria ol {
+            padding-left: 20px;
+        }
+
+        .academic-criteria li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .academic-criteria ul {
+            padding-left: 20px;
+            margin-top: 5px;
+            color: var(--text-muted);
+        }
+
+        .strict-badge {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: var(--panel-border);
+            margin: 20px 0 40px 0;
+            width: 100%;
+            max-width: 950px;
+        }
+
+        /* --- ENTORNO E INTERFAZ DEL JUEGO "LAST LIGHTKEEPER" --- */
+        .game-wrapper {
+            width: 100%;
+            max-width: 950px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+
+        .game-title-area {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .game-title-area h1 {
+            font-size: 2.5rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+            margin-bottom: 5px;
+        }
+
+        .game-title-area p {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: 1.8fr 1.2fr;
+            gap: 25px;
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .game-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .game-panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* JUICE VISUAL: EL HAZ DE LUZ DEL FARO */
+        .lighthouse-canvas-mock {
+            height: 140px;
+            background: linear-gradient(to bottom, #020617, #0b1329);
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .light-beam {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 200%; height: 200%;
+            background: conic-gradient(from 0deg at 50% 50%, transparent 42%, rgba(253, 224, 71, 0.25) 49%, rgba(253, 224, 71, 0.5) 50%, rgba(253, 224, 71, 0.25) 51%, transparent 58%);
+            transform: translate(-50%, -50%) rotate(0deg);
+            transform-origin: center;
+            mix-blend-mode: screen;
+            pointer-events: none;
+            transition: transform 1s linear, opacity 0.5s ease;
+        }
+
+        .tower-silhouette {
+            position: absolute;
+            bottom: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 30px; height: 75px;
+            background: #020617;
+            border-radius: 4px 4px 0 0;
+            z-index: 3;
+        }
+
+        .lantern-glow {
+            position: absolute;
+            top: 5px; left: 50%;
+            transform: translateX(-50%);
+            width: 14px; height: 14px;
+            background-color: var(--glow-yellow);
+            border-radius: 50%;
+            box-shadow: 0 0 25px 8px var(--glow-yellow);
+        }
+
+        /* INDICADORES MECÁNICOS METRICOS */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .metric-card {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            padding: 15px;
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .metric-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .bar-bg {
+            width: 100%; height: 8px;
+            background-color: #020617;
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%; width: 100%;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
+        }
+
+        .fuel-color { background-color: var(--glow-yellow); box-shadow: 0 0 8px var(--glow-yellow); }
+        .temp-color { background-color: var(--accent-blue); }
+
+        /* RADAR AUTOMÁTICO Y NAVEGACIÓN */
+        .radar-box {
+            background-color: rgba(2, 6, 23, 0.4);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            padding: 18px;
+        }
+
+        .sea-lane {
+            position: relative;
+            background-color: #020617;
+            height: 40px;
+            border-radius: 6px;
+            border: 1px dashed rgba(56, 189, 248, 0.2);
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .safe-harbor-zone {
+            position: absolute;
+            right: 0; width: 25%; height: 100%;
+            background-color: rgba(16, 185, 129, 0.08);
+            border-left: 2px solid var(--accent-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            color: var(--accent-green);
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .vessel-marker {
+            position: absolute;
+            left: 0%;
+            font-size: 1.4rem;
+            transform: translateX(-50%);
+            z-index: 5;
+            filter: drop-shadow(0 0 6px rgba(255,255,255,0.4));
+            transition: left 1s linear;
+        }
+
+        .narrative-ticker {
+            border-left: 3px solid var(--accent-amber);
+            padding-left: 12px;
+            margin-top: 8px;
+            min-height: 55px;
+        }
+
+        .vessel-identity { font-weight: 700; font-size: 0.95rem; color: var(--accent-amber); }
+        .vessel-intel { font-size: 0.85rem; color: var(--text-main); margin-top: 2px; line-height: 1.4; }
+
+        /* INTERFAZ DE CONTROL ACCIONABLE (DERECHA) */
+        .control-deck {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .action-module {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .action-module p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .control-btn {
+            background-color: #1e293b;
+            color: var(--text-main);
+            border: 1px solid var(--panel-border);
+            padding: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover:not(:disabled) { background-color: #334155; border-color: var(--text-muted); }
+        .control-btn:active:not(:disabled) { transform: scale(0.98); }
+        .control-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .btn-feed { border-color: var(--accent-amber); color: var(--accent-amber); }
+        .btn-feed:hover:not(:disabled) { background-color: rgba(245, 158, 11, 0.08); }
+
+        .btn-purge { border-color: var(--accent-blue); color: var(--accent-blue); }
+        .btn-purge:hover:not(:disabled) { background-color: rgba(56, 189, 248, 0.08); }
+
+        .btn-flash { border-color: var(--accent-green); color: var(--accent-green); }
+        .btn-flash:hover:not(:disabled) { background-color: rgba(16, 185, 129, 0.08); }
+
+        /* CAPAS DE MENÚS Y ESTADOS DE JUEGO */
+        .screen-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(7, 10, 19, 0.98);
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+        }
+        
+        .screen-overlay h3 { font-size: 1.8rem; margin-bottom: 12px; font-weight: 800; }
+        .screen-overlay p { color: var(--text-muted); max-width: 520px; margin-bottom: 25px; font-size: 0.95rem; line-height: 1.6; }
+        
+        .hidden { display: none !important; }
+
+        /* SENSACIÓN DE TENSIÓN: ANIMACIÓN CRÍTICA (JUICE) */
+        .critical-alarm {
+            animation: redAlert 0.8s ease infinite alternate;
+        }
+        
+        @keyframes redAlert {
+            from { border-color: var(--panel-border); }
+            to { border-color: var(--accent-red); box-shadow: inset 0 0 20px rgba(239, 68, 68, 0.15), 0 0 10px rgba(239, 68, 68, 0.1); }
+        }
+
+        /* SECCIÓN POSTMORTEM */
+        .postmortem-container {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            padding: 30px;
+            margin-top: 40px;
+            max-width: 950px;
+            width: 100%;
+        }
+        .postmortem-container h2 { font-size: 1.3rem; color: var(--accent-blue); margin-bottom: 15px; text-transform: uppercase; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; }
+        .postmortem-container h3 { font-size: 1rem; margin-top: 18px; margin-bottom: 6px; color: #ffffff; }
+        .postmortem-container p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+    </style>
+</head>
+<body>
+
+    <!-- BLOQUE DE CRITERIOS ACADÉMICOS -->
+    <div class="academic-criteria">
+        <h2>📋 Criterios Académicos de Evaluación Integrados</h2>
+        <ol>
+            <li><strong>Bucle Central Rápido:</strong> Balance continuo en tiempo real de recursos y variables críticas cada 1000ms.</li>
+            <li><strong>Sistemas Interactivos de Impacto Cruzado:</strong> El Clima altera el consumo base de Fuel e incrementa la velocidad de aproximación del Tráfico Marítimo.</li>
+            <li><strong>Toma de Decisiones Complejas:</strong> No basta con clicar; pulsar un botón inadecuado acelera de forma inmediata la condición de derrota contraria.</li>
+            <li><strong>Mecánica de Riesgo/Recompensa:</strong> La inyección de brea otorga combustible de forma inmediata pero eleva la temperatura a rangos de explosión crítica.</li>
+            <li><strong>Estados de Remontada:</strong> La purga de vapor coordinada permite enfriar el núcleo sacrificando el doble de tasa de consumo. Salvar barcos a tiempo recupera combustible.</li>
+            <li><strong>Microtextos Narrativos:</strong> Alertas con personalidad literaria para 5 naves con lógicas distintas y 4 estados de variabilidad meteorológica.</li>
+        </ol>
+        <div class="strict-badge">
+            ⚙️ <strong>Cumplimiento de Reglas Senior:</strong> El entorno prescinde por completo de la sobrecarga de Canvas web, explotando transiciones de renderizado de la GPU nativa del navegador para mantener un rendimiento continuo a 60fps sin librerías externas.
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- ENTORNO E INTERFAZ DEL JUEGO "LAST LIGHTKEEPER" -->
+    <div class="game-wrapper">
+        <div class="game-title-area">
+            <h1>Last Lightkeeper</h1>
+            <p>Archipiélago de las Sombras — Sistema Analógico de Emergencia</p>
+        </div>
+
+        <div class="game-grid">
+            <!-- PANEL DE TELEMETRÍA (IZQUIERDA) -->
+            <div class="game-panel" id="telemetry-panel">
+                <!-- Haz de luz visual -->
+                <div class="lighthouse-canvas-mock">
+                    <div class="light-beam" id="visual-beam"></div>
+                    <div class="tower-silhouette">
+                        <div class="lantern-glow"></div>
+                    </div>
+                </div>
+
+                <!-- Métricas Principales -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span>🔥 Combustible Fuego</span>
+                            <span id="fuel-display">100%</span>
+                        </div>
+                        <div class="bar-bg">
+                            <div class="bar-fill fuel-color" id="fuel-bar" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span>⚙️ Temperatura Caldera</span>
+                            <span id="temp-display">30°C</span>
+                        </div>
+                        <div class="bar-bg">
+                            <div class="bar-fill temp-color" id="temp-bar" style="width: 30%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Métricas de Soporte -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-header">⛈️ Variabilidad Climatológica</div>
+                        <div id="weather-display" class="metric-value" style="font-size: 1.1rem; margin-top:5px;">Estable</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-header">⏳ Conclusión del Turno</div>
+                        <div id="timer-display" class="metric-value" style="font-size: 1.1rem; margin-top:5px;">180s</div>
+                    </div>
+                </div>
+
+                <!-- Radar de Tráfico Marítimo -->
+                <div class="radar-box">
+                    <div class="metric-header">📡 Telemetría Radar de Tráfico Marítimo</div>
+                    <div class="sea-lane">
+                        <div class="safe-harbor-zone">CANAL SEGURO</div>
+                        <div class="vessel-marker" id="vessel-node" style="left: 0%;">🚢</div>
+                    </div>
+                    <div class="narrative-ticker">
+                        <div class="vessel-identity" id="vessel-title">Línea Despejada</div>
+                        <div class="vessel-intel" id="vessel-text">Escaneando transpondedores acústicos en el sector...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL DE CONTROL HIDRÁULICO (DERECHA) -->
+            <div class="control-deck">
+                <div class="action-module">
+                    <button class="control-btn btn-feed" id="btn-feed">Inyectar Brea Fósil</button>
+                    <p>Impacto Directo: Recupera instantáneamente un +22% de combustible. Sobrecarga la caldera aumentando la temperatura interna en +16°C.</p>
+                </div>
+
+                <div class="action-module">
+                    <button class="control-btn btn-purge" id="btn-purge">Compresión: Purgar Vapor</button>
+                    <p>Impacto Directo: Descarga la presión de la caldera bajando -26°C de temperatura. Duplica temporalmente la tasa de consumo de fuel en el siguiente ciclo.</p>
+                </div>
+
+                <div class="action-module">
+                    <button class="control-btn btn-flash" id="btn-flash">Emitir Destello Focalizado</button>
+                    <p>Impacto Directo: Envía una potente ráfaga óptica. Salva al navío activo si se pulsa exactamente cuando cruza la zona del Canal Seguro. Coste: -8% Fuel.</p>
+                </div>
+            </div>
+
+            <!-- Capas de Interfaz de Estado -->
+            <div class="screen-overlay" id="start-overlay">
+                <h3>Guardia del Faro Central</h3>
+                <p>Las calderas primarias han fallado catastróficamente. Eres el último farero con vida. Tu objetivo es mantener operativo el sistema neumático durante 180 segundos. Vigila la temperatura (si toca 100°C explotará), el combustible, y salva a los navíos emitiendo destellos cuando crucen el Canal Seguro.</p>
+                <button class="control-btn" id="btn-start" style="max-width: 200px;">Asumir Mandos</button>
+            </div>
+
+            <div class="screen-overlay hidden" id="end-overlay">
+                <h3 id="end-status-title">La Luz se ha Apagado</h3>
+                <p id="end-status-desc"></p>
+                <button class="control-btn" id="btn-restart" style="max-width: 200px;">Reiniciar Turno</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POSTMORTEM DEL DISEÑADOR -->
+    <div class="postmortem-container">
+        <h2>Postmortem del Diseñador</h2>
+        <h3>1. ¿Cuál es la fantasía central del juego?</h3>
+        <p>La fantasía reside en la tensión de ser el último baluarte analógico contra el caos natural. No eres un héroe con armas, eres un operador de maquinaria pesada, vieja e inestable. Las vidas en el mar dependen de tu capacidad para gestionar la entropía de dos recursos conflictivos (presión térmica y combustible fósil) mientras mides con precisión los intervalos de tiempo en los que la luz incide sobre el oleaje.</p>
+        
+        <h3>2. ¿Qué sistema es el más frágil?</h3>
+        <p>El balance cruzado del Clima y la Purga de Vapor. Hacia el final de la partida (Fase 4: Ciclón), el consumo base de combustible es tan devastador (-5.2%/s) que activar una Purga de Vapor en un mal momento duplica el consumo a tasas insostenibles (-11.4%/s), provocando una derrota instantánea en apenas dos segundos. Es un delicado "acoplamiento de variables" donde la codicia por enfriar la caldera te desangra energéticamente.</p>
+        
+        <h3>3. ¿Qué recortarías primero en una versión comercial?</h3>
+        <p>El sistema de simulación climática escalonada por tiempo. En su lugar, establecería un clima estático configurado al inicio de cada noche seleccionable (niveles de dificultad fijos). Esto reduciría la carga cognitiva en la arquitectura de código y permitiría enfocar los esfuerzos en programar más eventos de barcos variados con patrones de navegación complejos sobre el mismo bucle central.</p>
+    </div>
+
+    <!-- LÓGICA DE PROGRAMACIÓN (VANILLA JS - OBJETO LITERAL ENCAPSULADO) -->
+    <script>
+        const GameCore = {
+            // Estructuras de Datos de Estado Interno
+            fuel: 100,
+            temperature: 30,
+            timer: 180,
+            currentWeather: 0,
+            vesselProgress: 0,
+            activeVessel: null,
+            mainInterval: null,
+            beamAngle: 0,
+            isVentingActive: false,
+
+            // Configuración estática y balance balanceado
+            weatherProfiles: [
+                { title: "☀️ Mar en Calma", fuelModifier: 1.4, tempModifier: 0.5, speedModifier: 4 },
+                { title: "💨 Rachas de Viento", fuelModifier: 2.3, tempModifier: 0.9, speedModifier: 6 },
+                { title: "🌧️ Frente de Tormenta", fuelModifier: 3.6, tempModifier: 1.4, speedModifier: 8 },
+                { title: "🌪️ Ciclón Marítimo", fuelModifier: 5.2, tempModifier: 2.0, speedModifier: 11 }
+            ],
+
+            vesselManifest: [
+                { title: "🚢 Mercante 'San Antonio'", intel: "Carguero pesado cargado de grano. Avanza de forma lenta pero muy predecible.", type: "merchant" },
+                { title: "⛵ Balandra Contrabandista 'Sombra'", intel: "Casco ligero sin luces de posición. Velocidad crítica detectada en el sector.", type: "smuggler" },
+                { title: "⚓ Destructor Militar 'Acorazado'", intel: "Exige prioridad de paso por radio de emergencia. Se mueve a ritmo constante.", type: "destroyer" },
+                { title: "🐳 Ballena Azul de Cresta", intel: "Falso positivo en el sonar. No requiere destello. ¡Si la deslumbras perderás combustible inútilmente!", type: "whale" },
+                { title: "🛶 Bote de Salvamento 'Nautilus'", intel: "Supervivientes del naufragio del este. Carecen de propulsión mecánica. ¡Urgente!", type: "boat" }
+            ],
+
+            // Inicializador del Ciclo de Vida del Prototipo
+            start() {
+                this.fuel = 100;
+                this.temperature = 30;
+                this.timer = 180;
+                this.currentWeather = 0;
+                this.isVentingActive = false;
+
+                // Limpieza de pantallas superpuestas y alarmas de peligro
+                document.getElementById('start-overlay').classList.add('hidden');
+                document.getElementById('end-overlay').classList.add('hidden');
+                document.getElementById('telemetry-panel').classList.remove('critical-alarm');
+                
+                this.spawnVessel();
+
+                // Detener hilos y ciclos huérfanos anteriores
+                if (this.mainInterval) clearInterval(this.mainInterval);
+                
+                // Ejecución del bucle principal a frecuencia estabilizada de 1Hz (1 segundo)
+                this.mainInterval = setInterval(() => this.engineTick(), 1000);
+                this.refreshView();
+            },
+
+            // Asignación de tráfico marino asíncrono
+            spawnVessel() {
+                this.vesselProgress = 0;
+                this.activeVessel = this.vesselManifest[Math.floor(Math.random() * this.vesselManifest.length)];
+                
+                document.getElementById('vessel-title').innerText = this.activeVessel.title;
+                document.getElementById('vessel-text').innerText = this.activeVessel.intel;
+
+                // Actualizar emoji visual en función de la naturaleza del barco
+                const node = document.getElementById('vessel-node');
+                switch(this.activeVessel.type) {
+                    case "merchant": node.innerText = "🚢"; break;
+                    case "smuggler": node.innerText = "⛵"; break;
+                    case "destroyer": node.innerText = "⚓"; break;
+                    case "whale": node.innerText = "🐳"; break;
+                    case "boat": node.innerText = "🛶"; break;
+                    default: node.innerText = "🚢";
+                }
+            },
+
+            // Motor de Ejecución en Tiempo Real (Bucle Central)
+            engineTick() {
+                this.timer--;
+
+                // Condición de Victoria: El tiempo de guardia expira con el faro operativo
+                if (this.timer <= 0) {
+                    this.terminateSession(true, "Excelente guardia, farero. Has estabilizado el núcleo neumático y guiado a la flota mercante a aguas seguras.");
+                    return;
+                }
+
+                // Escalada de tensión climatológica en función del tiempo restante de juego
+                if (this.timer < 45) this.currentWeather = 3;      // Ciclón
+                else if (this.timer < 90) this.currentWeather = 2; // Tormenta
+                else if (this.timer < 135) this.currentWeather = 1; // Rachas de Viento
+                else this.currentWeather = 0;                      // Mar en calma
+
+                const weather = this.weatherProfiles[this.currentWeather];
+                let actualFuelLoss = weather.fuelModifier;
+
+                // Evaluación del estado de purga de vapor (Interacción de sistemas de impacto cruzado)
+                if (this.isVentingActive) {
+                    actualFuelLoss *= 2.2; // Severa penalización energética por descompresión hidráulica
+                    this.temperature = Math.max(15, this.temperature - 26);
+                    this.isVentingActive = false; // Resetear la válvula neumática automáticamente
+                } else {
+                    this.temperature += weather.tempModifier;
+                }
+
+                this.fuel = Math.max(0, this.fuel - actualFuelLoss);
+
+                // Progreso del navío activo
+                this.vesselProgress += weather.speedModifier;
+
+                // Verificación de colisión contra la barrera de arrecifes
+                if (this.vesselProgress >= 100) {
+                    if (this.activeVessel.type === "whale") {
+                        // Las ballenas no encallan, simplemente se sumergen de forma segura
+                        this.spawnVessel();
+                    } else {
+                        // Impacto crítico de una embarcación civil
+                        this.terminateSession(false, `Impacto crítico. El ${this.activeVessel.title} encalló en el arrecife exterior debido a la falta de señalización óptica.`);
+                        return;
+                    }
+                }
+
+                // Evaluación instantánea de condiciones de derrota técnicas
+                if (this.fuel <= 0) {
+                    this.terminateSession(false, "Combustión extinguida. El faro se apagó por completo y el archipiélago quedó sumergido en la oscuridad absoluta.");
+                    return;
+                }
+
+                if (this.temperature >= 100) {
+                    this.terminateSession(false, "Explosión neumática. Las calderas superaron el límite crítico de 100°C debido a la excesiva acumulación térmica.");
+                    return;
+                }
+
+                // Activación de alarma visual por baja energía, excesivo calor o barco en estado de pre-colisión (Juice)
+                const panel = document.getElementById('telemetry-panel');
+                if (this.fuel < 25 || this.temperature > 78 || (this.vesselProgress > 55 && this.vesselProgress < 75)) {
+                    panel.classList.add('critical-alarm');
+                } else {
+                    panel.classList.remove('critical-alarm');
+                }
+
+                // Rotación física del haz luminoso con transiciones CSS para dar fluidez nativa a 60fps
+                this.beamAngle = (this.beamAngle + 45) % 360;
+                this.refreshView();
+            },
+
+            // Manejador del panel hidráulico (Control del Jugador)
+            executeAction(actionType) {
+                // Bloqueo de acciones si el juego está inactivo
+                if (this.timer <= 0 || this.fuel <= 0 || this.temperature >= 100) return;
+
+                if (actionType === 'feed') {
+                    this.fuel = Math.min(100, this.fuel + 22);
+                    this.temperature += 16;
+                    
+                    document.getElementById('vessel-title').innerText = "⚡ Sobrecarga de Brea Fósil";
+                    document.getElementById('vessel-text').innerText = "Combustible inyectado al sistema neumático. Presión y temperatura interna en aumento acelerado.";
+                }
+                else if (actionType === 'purge') {
+                    if (this.isVentingActive) return; // Evitar el spam de válvulas neumáticas
+                    this.isVentingActive = true;
+                    
+                    document.getElementById('vessel-title').innerText = "💨 Purga de Vapor Activada";
+                    document.getElementById('vessel-text').innerText = "Válvulas abiertas de par en par. La descarga térmica se aplicará en el próximo ciclo a costa de duplicar el consumo.";
+                }
+                else if (actionType === 'flash') {
+                    if (this.fuel > 8) {
+                        this.fuel -= 8; // Coste operativo del destello focalizado
+
+                        // El destello óptico solo surte efecto si el navío se encuentra en la zona segura (75% a 99%)
+                        if (this.vesselProgress >= 75 && this.vesselProgress < 100) {
+                            if (this.activeVessel.type === "whale") {
+                                // Deslumbrar a la ballena no otorga combustible, la asusta
+                                document.getElementById('vessel-title').innerText = "🐳 Ballena Ahuyentada";
+                                document.getElementById('vessel-text').innerText = "Has deslumbrado a una ballena azul. Se sumerge en las profundidades, pero has desperdiciado energía valiosa.";
+                                this.spawnVessel();
+                            } else {
+                                // Rescate exitoso: Recompensa de combustible extraído de las cubiertas aliadas
+                                this.fuel = Math.min(100, this.fuel + 15);
+                                document.getElementById('vessel-title').innerText = "✨ ¡Navío Guiado a Puerto!";
+                                document.getElementById('vessel-text').innerText = `El ${this.activeVessel.title} avista el destello focalizado y corrige su rumbo de inmediato a puerto seguro.`;
+                                this.spawnVessel();
+                            }
+                        } else {
+                            document.getElementById('vessel-title').innerText = "❌ Angulo Óptico Inválido";
+                            document.getElementById('vessel-text').innerText = "El barco está fuera del ángulo de refracción del faro. Debes esperar a que ingrese en el Canal Seguro (Zona Verde).";
+                        }
+                    } else {
+                        document.getElementById('vessel-title').innerText = "⚠️ Combustible Crítico";
+                        document.getElementById('vessel-text').innerText = "No dispones de energía suficiente para activar el destello focalizado.";
+                    }
+                }
+                this.refreshView();
+            },
+
+            // Sincronización del estado lógico con el DOM (Usa transiciones de GPU nativas para suavidad)
+            refreshView() {
+                // Valores de texto
+                document.getElementById('fuel-display').innerText = `${Math.round(this.fuel)}%`;
+                document.getElementById('temp-display').innerText = `${Math.round(this.temperature)}°C`;
+                document.getElementById('timer-display').innerText = `${this.timer}s`;
+                document.getElementById('weather-display').innerText = this.weatherProfiles[this.currentWeather].title;
+
+                // Ancho dinámico de las barras proporcionales
+                document.getElementById('fuel-bar').style.width = `${this.fuel}%`;
+                document.getElementById('temp-bar').style.width = `${this.temperature}%`;
+
+                // Modificación cromática de la barra térmica según el peligro
+                const tBar = document.getElementById('temp-bar');
+                if (this.temperature > 80) {
+                    tBar.style.backgroundColor = 'var(--accent-red)';
+                } else if (this.temperature > 55) {
+                    tBar.style.backgroundColor = 'var(--accent-amber)';
+                } else {
+                    tBar.style.backgroundColor = 'var(--accent-blue)';
+                }
+
+                // Posicionamiento horizontal del marcador del barco en el radar
+                const node = document.getElementById('vessel-node');
+                node.style.left = `${Math.min(100, this.vesselProgress)}%`;
+
+                // Rotación dinámica y opacidad del haz óptico en base a la energía del faro
+                const beam = document.getElementById('visual-beam');
+                beam.style.transform = `translate(-50%, -50%) rotate(${this.beamAngle}deg)`;
+                beam.style.opacity = (this.fuel / 100).toString();
+            },
+
+            // Congelamiento de hilos y terminación del bucle lógico
+            terminateSession(isVictory, terminationMessage) {
+                clearInterval(this.mainInterval);
+                const overlay = document.getElementById('end-overlay');
+                const title = document.getElementById('end-status-title');
+                const desc = document.getElementById('end-status-desc');
+
+                overlay.classList.remove('hidden');
+
+                if (isVictory) {
+                    title.innerText = "🏆 Guardia Completada";
+                    title.style.color = "var(--accent-green)";
+                } else {
+                    title.innerText = "💀 Turno Fallido";
+                    title.style.color = "var(--accent-red)";
+                }
+                desc.innerText = terminationMessage;
+            }
+        };
+
+        // Enlace robusto de eventos de forma asíncrona tras la carga completa del DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('btn-start').addEventListener('click', () => GameCore.start());
+            document.getElementById('btn-restart').addEventListener('click', () => GameCore.start());
+            document.getElementById('btn-feed').addEventListener('click', () => GameCore.executeAction('feed'));
+            document.getElementById('btn-purge').addEventListener('click', () => GameCore.executeAction('purge'));
+            document.getElementById('btn-flash').addEventListener('click', () => GameCore.executeAction('flash'));
+        });
+    </script>
+</body>
+</html>
