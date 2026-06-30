@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLM Test Plaza - Portal de Prototipos</title>
+    <title>LLM Test Plaza — Portal de Prototipos</title>
     <style>
         :root {
             --bg-dark: #0a0e1a;
             --bg-gradient: linear-gradient(135deg, #0a0e1a 0%, #1a1f3a 100%);
             --panel-bg: #141828;
-            --panel-bg-hover: #1a2038;
             --panel-border: #2a3555;
             --text-main: #e2e8f0;
             --text-muted: #7b8ab8;
@@ -19,38 +18,21 @@
             --accent-green: #34d399;
             --accent-purple: #a78bfa;
             --accent-pink: #f472b6;
-            --code-bg: #0a0e17;
-            --glow-blue: rgba(96, 165, 250, 0.4);
+            --accent-red: #ef4444;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background: var(--bg-gradient);
             background-attachment: fixed;
             color: var(--text-main);
             padding: 40px 20px;
             min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: 
-                radial-gradient(circle at 20% 30%, rgba(96, 165, 250, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(167, 139, 250, 0.08) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
         }
 
         .container {
-            position: relative;
-            z-index: 1;
-            width: 100%;
             max-width: 1100px;
             margin: 0 auto;
             display: flex;
@@ -58,42 +40,22 @@
             gap: 30px;
         }
 
-        /* ===== HERO HEADER ===== */
+        /* ===== HERO ===== */
         .hero {
             text-align: center;
             padding: 50px 30px;
             background: linear-gradient(135deg, rgba(96, 165, 250, 0.08), rgba(167, 139, 250, 0.08));
             border: 1px solid var(--panel-border);
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
             position: relative;
             overflow: hidden;
         }
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(96, 165, 250, 0.1) 0%, transparent 60%);
-            animation: rotate 20s linear infinite;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-        }
-
         .hero h1 {
-            font-size: 3rem;
+            font-size: 2.8rem;
             font-weight: 800;
             letter-spacing: -1px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -102,12 +64,12 @@
         }
 
         .hero .subtitle {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: var(--text-muted);
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
-        .hero .badge {
+        .badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -122,7 +84,7 @@
             letter-spacing: 1px;
         }
 
-        .hero .badge::before {
+        .badge::before {
             content: '●';
             animation: pulse-dot 1.5s infinite;
         }
@@ -141,7 +103,6 @@
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             flex-wrap: wrap;
             gap: 15px;
         }
@@ -161,14 +122,15 @@
             animation: pulse-dot 1.5s infinite;
         }
 
+        .status-dot.loading { background: var(--accent-amber); box-shadow: 0 0 10px var(--accent-amber); }
+        .status-dot.error { background: var(--accent-red); box-shadow: 0 0 10px var(--accent-red); }
+
         .status-text {
             font-size: 0.9rem;
             color: var(--text-muted);
         }
 
-        .status-text strong {
-            color: var(--text-main);
-        }
+        .status-text strong { color: var(--text-main); }
 
         .repo-link {
             color: var(--accent-cyan);
@@ -184,16 +146,44 @@
 
         .repo-link:hover {
             background: rgba(34, 211, 238, 0.2);
-            border-color: var(--accent-cyan);
         }
 
-        /* ===== SECCIÓN DE JUEGOS ===== */
+        /* ===== DEBUG PANEL ===== */
+        .debug-panel {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
+            padding: 16px 20px;
+            font-size: 0.85rem;
+            color: var(--accent-red);
+            display: none;
+        }
+
+        .debug-panel.visible { display: block; }
+
+        .debug-panel h3 {
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .debug-panel code {
+            display: block;
+            background: rgba(0,0,0,0.4);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: #fca5a5;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        /* ===== GAMES SECTION ===== */
         .games-section {
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
             border-radius: 16px;
             padding: 35px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
         }
 
         .section-header {
@@ -209,17 +199,9 @@
             display: flex;
             align-items: center;
             gap: 12px;
-        }
-
-        .section-title h2 {
             font-size: 1.5rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .section-title .icon {
-            font-size: 1.8rem;
         }
 
         .game-count {
@@ -232,10 +214,10 @@
             letter-spacing: 1px;
         }
 
-        /* GRID DE JUEGOS */
+        /* GRID */
         .arcade-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 20px;
         }
 
@@ -243,7 +225,7 @@
             background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
             border: 2px solid var(--panel-border);
             border-radius: 14px;
-            padding: 28px 22px;
+            padding: 30px 22px;
             text-align: center;
             text-decoration: none;
             color: var(--text-main);
@@ -252,19 +234,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 180px;
+            min-height: 200px;
             position: relative;
             overflow: hidden;
             cursor: pointer;
-        }
-
-        .game-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(135deg, transparent, rgba(96, 165, 250, 0.05));
-            opacity: 0;
-            transition: opacity 0.3s;
         }
 
         .game-card:hover {
@@ -273,34 +246,21 @@
             box-shadow: 0 15px 40px rgba(96, 165, 250, 0.2);
         }
 
-        .game-card:hover::before {
-            opacity: 1;
-        }
-
         .game-icon {
             font-size: 3.5rem;
             margin-bottom: 12px;
-            filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
-            position: relative;
-            z-index: 1;
         }
 
         .game-title {
             font-weight: 700;
-            font-size: 1.1rem;
-            text-transform: capitalize;
-            letter-spacing: 0.3px;
+            font-size: 1.2rem;
             margin-bottom: 8px;
-            position: relative;
-            z-index: 1;
         }
 
         .game-desc {
             font-size: 0.85rem;
             color: var(--text-muted);
             line-height: 1.4;
-            position: relative;
-            z-index: 1;
         }
 
         .game-tag {
@@ -327,337 +287,311 @@
             border: 1px solid rgba(251, 191, 36, 0.4);
         }
 
-        .tag-demo {
-            background: rgba(167, 139, 250, 0.2);
-            color: var(--accent-purple);
-            border: 1px solid rgba(167, 139, 250, 0.4);
+        .tag-api {
+            background: rgba(34, 211, 238, 0.2);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(34, 211, 238, 0.4);
         }
 
-        /* ===== SECCIÓN CRITERIOS ===== */
-        .panel {
-            background: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: 16px;
-            padding: 35px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-        }
-
-        .panel h2 {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 1.4rem;
+        /* INFO BANNER */
+        .info-banner {
+            background: rgba(251, 191, 36, 0.08);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 8px;
+            padding: 14px 18px;
             margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+            color: var(--accent-amber);
+            display: none;
         }
 
-        .panel.blue h2 { color: var(--accent-blue); }
-        .panel.amber h2 { color: var(--accent-amber); }
+        .info-banner.visible { display: block; }
 
-        .panel ol {
-            padding-left: 22px;
-            line-height: 1.8;
-            font-size: 0.95rem;
-            color: var(--text-main);
-        }
-
-        .panel li {
-            margin-bottom: 10px;
-            padding-left: 5px;
-        }
-
-        .panel li::marker {
-            color: var(--accent-blue);
-            font-weight: bold;
-        }
-
-        /* ===== PROMPT BOX ===== */
-        .prompt-box {
-            background: var(--code-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: 10px;
-            padding: 22px;
-            font-family: 'Courier New', 'Monaco', monospace;
-            font-size: 0.88rem;
-            line-height: 1.7;
-            color: #a7f3d0;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            max-height: 450px;
-            overflow-y: auto;
-        }
-
-        .prompt-box::-webkit-scrollbar {
-            width: 8px;
-        }
-        .prompt-box::-webkit-scrollbar-track {
-            background: var(--code-bg);
-        }
-        .prompt-box::-webkit-scrollbar-thumb {
-            background: var(--panel-border);
-            border-radius: 4px;
-        }
-
-        /* ===== FOOTER ===== */
+        /* FOOTER */
         .footer {
             text-align: center;
-            padding: 25px;
+            padding: 20px;
             color: var(--text-muted);
             font-size: 0.85rem;
-            border-top: 1px solid var(--panel-border);
-            margin-top: 10px;
         }
 
-        .footer a {
-            color: var(--accent-cyan);
-            text-decoration: none;
-        }
+        .footer a { color: var(--accent-cyan); text-decoration: none; }
 
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
-        /* RESPONSIVE */
         @media (max-width: 600px) {
             body { padding: 20px 15px; }
             .hero h1 { font-size: 2rem; }
             .hero { padding: 35px 20px; }
-            .games-section, .panel { padding: 25px 20px; }
+            .games-section { padding: 25px 20px; }
             .arcade-grid { grid-template-columns: 1fr; }
-            .status-bar { flex-direction: column; align-items: stretch; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+<div class="container">
 
-        <!-- HERO -->
-        <div class="hero">
-            <div class="hero-content">
-                <h1>🎮 LLM Test Plaza</h1>
-                <p class="subtitle">Portal de Prototipos · Inteligencia Aplicada a Videojuegos</p>
-                <div class="badge">Arcade Operativo</div>
-            </div>
-        </div>
-
-        <!-- STATUS BAR -->
-        <div class="status-bar">
-            <div class="status-info">
-                <div class="status-dot"></div>
-                <div class="status-text">
-                    <strong>Sistema activo</strong> · Catálogo cargado correctamente
-                </div>
-            </div>
-            <a href="https://github.com/CoqueTornado/llm-test-plaza" target="_blank" class="repo-link">
-                📦 CoqueTornado/llm-test-plaza
-            </a>
-        </div>
-
-        <!-- SECCIÓN PRINCIPAL: JUEGOS -->
-        <div class="games-section">
-            <div class="section-header">
-                <div class="section-title">
-                    <span class="icon">🕹️</span>
-                    <h2>Galería de Prototipos</h2>
-                </div>
-                <span class="game-count" id="game-count">6 JUEGOS</span>
-            </div>
-
-            <div class="arcade-grid" id="arcade-grid">
-                <!-- Los juegos se cargan por JS -->
-            </div>
-        </div>
-
-        <!-- CRITERIOS ACADÉMICOS -->
-        <div class="panel blue">
-            <h2>📋 Criterios del Laboratorio</h2>
-            <ol>
-                <li>Los microjuegos deben presentar un <strong>bucle central adictivo</strong> explicable en menos de 30 segundos.</li>
-                <li>Deben interactuar al menos <strong>3 sistemas lógicos complejos</strong> en tiempo real.</li>
-                <li>Se exige <strong>toma de decisiones bajo presión</strong> y mecánicas balanceadas de riesgo/recompensa.</li>
-                <li>Los entornos deben respetar criterios de <strong>diseño de interfaz limpios</strong> y microtextos con identidad narrativa.</li>
-            </ol>
-        </div>
-
-        <!-- PROMPT INYECTADO -->
-        <div class="panel amber">
-            <h2>🤖 Prompt de Generación</h2>
-            <div class="prompt-box">Quiero una prueba real de inteligencia aplicada a videojuegos.
-
-Crea un prototipo completo en un solo archivo HTML llamado "Last Lightkeeper".
-Debe funcionar solo con HTML, CSS y JavaScript vanilla. Sin librerías externas.
-
-Premisa:
-Eres el último farero de un archipiélago en ruinas. Cada noche debes mantener viva la luz principal mientras barcos perdidos, contrabandistas y tormentas alteran el sistema.
-
-Tu tarea:
-- Bucle central claro y adictivo en menos de 30 segundos.
-- Al menos 3 sistemas interactuando: combustible, clima y tráfico marítimo.
-- Decisiones bajo presión (no solo clics).
-- Mecánica de riesgo/recompensa.
-- Condición de derrota y forma clara de remontar.
-- Interfaz legible y visualmente cuidada.
-- Microtexto de calidad: título, subtítulo, instrucciones, 5 eventos con personalidad.
-- Capa de "juice": animaciones, feedback visual, tensión creciente.
-- Código organizado con comentarios con criterio real.
-- Sección "Postmortem del diseñador" al final.
-
-Reglas:
-- Nada de demos muertas, debe ser jugable de verdad.
-- Nada de clones genéricos de tower defense o clicker.
-- No usar canvas si no es necesario.
-- Si simplificas, que sea con criterio senior.
-- Un núcleo fuerte, no lluvia de features.</div>
-        </div>
-
-        <!-- FOOTER -->
-        <div class="footer">
-            <p>🚀 Desplegado en <a href="https://coquetornado.github.io/llm-test-plaza/" target="_blank">GitHub Pages</a> · LLM Test Plaza © 2026</p>
-        </div>
-
+    <!-- HERO -->
+    <div class="hero">
+        <h1>🎮 LLM Test Plaza</h1>
+        <p class="subtitle">Portal de Prototipos · Inteligencia Aplicada a Videojuegos</p>
+        <div class="badge" id="heroBadge">Arcade Operativo</div>
     </div>
 
-    <script>
-        // ============================================
-        // CATÁLOGO PRINCIPAL DE JUEGOS
-        // ============================================
-        // Este array es la FUENTE PRINCIPAL de contenido.
-        // Siempre se mostrará, sin depender de APIs externas.
-        
-        const GAMES = [
-            {
-                name: "Last Lightkeeper",
-                icon: "🏮",
-                desc: "El último farero del archipiélago",
-                tag: "live",
-                tagText: "JUGABLE",
-                href: "Last-Lightkeeper/index.html"
-            },
-            {
-                name: "Neon Drift",
-                icon: "🏎️",
-                desc: "Carreras arcade a toda velocidad",
-                tag: "live",
-                tagText: "JUGABLE",
-                href: "Neon-Drift/index.html"
-            },
-            {
-                name: "Pixel Invaders",
-                icon: "👾",
-                desc: "Shooter retro con oleadas infinitas",
-                tag: "wip",
-                tagText: "EN DEV",
-                href: "Pixel-Invaders/index.html"
-            },
-            {
-                name: "Dungeon Crawler",
-                icon: "🗡️",
-                desc: "Roguelike procedural en mazmorras",
-                tag: "demo",
-                tagText: "DEMO",
-                href: "Dungeon-Crawler/index.html"
-            },
-            {
-                name: "Puzzle Matrix",
-                icon: "🧩",
-                desc: "Puzzles lógicos con mecánicas únicas",
-                tag: "live",
-                tagText: "JUGABLE",
-                href: "Puzzle-Matrix/index.html"
-            },
-            {
-                name: "Storm Rider",
-                icon: "⚡",
-                desc: "Acción bajo presión atmosférica",
-                tag: "wip",
-                tagText: "EN DEV",
-                href: "Storm-Rider/index.html"
-            }
-        ];
+    <!-- STATUS BAR -->
+    <div class="status-bar">
+        <div class="status-info">
+            <div class="status-dot loading" id="statusDot"></div>
+            <div class="status-text" id="statusText">
+                <strong>Iniciando</strong> · Escaneando repositorio...
+            </div>
+        </div>
+        <a href="#" id="repoLink" class="repo-link" target="_blank">📦 Ver repositorio</a>
+    </div>
 
-        // ============================================
-        // RENDERIZADO DE LA GALERÍA
-        // ============================================
-        function renderGames(games) {
-            const grid = document.getElementById("arcade-grid");
-            const counter = document.getElementById("game-count");
-            
-            grid.innerHTML = "";
-            counter.textContent = `${games.length} JUEGOS`;
+    <!-- DEBUG PANEL (solo se muestra si hay errores) -->
+    <div class="debug-panel" id="debugPanel">
+        <h3>🔍 Diagnóstico del escáner</h3>
+        <p id="debugMessage"></p>
+        <code id="debugDetails"></code>
+    </div>
 
-            games.forEach((game, index) => {
-                const card = document.createElement("a");
-                card.className = "game-card";
-                card.href = game.href;
-                card.style.animationDelay = `${index * 0.05}s`;
-                
-                const tagClass = `tag-${game.tag}`;
-                
-                card.innerHTML = `
-                    <div class="game-tag ${tagClass}">${game.tagText}</div>
-                    <div class="game-icon">${game.icon}</div>
-                    <div class="game-title">${game.name.replace(/-/g, " ")}</div>
-                    <div class="game-desc">${game.desc}</div>
-                `;
-                
-                // Efecto hover adicional
-                card.addEventListener("mouseenter", () => {
-                    card.style.transform = "translateY(-6px) scale(1.02)";
-                });
-                card.addEventListener("mouseleave", () => {
-                    card.style.transform = "translateY(0) scale(1)";
-                });
-                
-                grid.appendChild(card);
-            });
-        }
+    <!-- SECCIÓN DE JUEGOS -->
+    <div class="games-section">
+        <div class="section-header">
+            <div class="section-title">
+                <span>🕹️</span>
+                <h2>Galería de Prototipos</h2>
+            </div>
+            <span class="game-count" id="gameCount">CARGANDO...</span>
+        </div>
 
-        // ============================================
-        // INICIALIZACIÓN INMEDIATA
-        // ============================================
-        // Se renderiza TODO al instante, sin esperar APIs
-        document.addEventListener("DOMContentLoaded", () => {
-            renderGames(GAMES);
-            
-            // Intentar cargar juegos reales del repo (opcional, no bloquea)
-            setTimeout(() => {
-                fetchRealGames();
-            }, 1000);
+        <div class="info-banner" id="infoBanner">
+            ⚠️ Mostrando catálogo local. La API de GitHub no respondió, pero los juegos siguen accesibles.
+        </div>
+
+        <div class="arcade-grid" id="arcadeGrid">
+            <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">
+                ⏳ Cargando juegos...
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <p>🚀 Desplegado en <a href="https://coquetornado.github.io/llm-test-plaza/" target="_blank">GitHub Pages</a> · LLM Test Plaza © 2026</p>
+    </div>
+
+</div>
+
+<script>
+// ============================================
+// CONFIGURACIÓN PRINCIPAL
+// ============================================
+
+// 🎮 CATÁLOGO LOCAL (SIEMPRE se muestra como fallback)
+// Añade aquí tus juegos. El "href" es la ruta relativa desde este index.html
+const LOCAL_GAMES = [
+    {
+        name: "Neon Drift",
+        icon: "🏎️",
+        desc: "Arcade racer retrowave — esquiva tráfico a toda velocidad",
+        tag: "live",
+        tagText: "JUGABLE",
+        href: "neondrift.html"  // ← Archivo en la raíz del repo
+    },
+    {
+        name: "Gemini Flash 3.5",
+        icon: "🤖",
+        desc: "Prototipo experimental con IA generativa",
+        tag: "wip",
+        tagText: "EN DEV",
+        href: "geminiflash35.html"  // ← Archivo en la raíz del repo
+    }
+];
+
+// Configuración del repositorio
+const REPO_OWNER = "CoqueTornado";
+const REPO_NAME = "llm-test-plaza";
+
+// ============================================
+// REFERENCIAS DOM
+// ============================================
+const grid = document.getElementById('arcadeGrid');
+const gameCount = document.getElementById('gameCount');
+const statusDot = document.getElementById('statusDot');
+const statusText = document.getElementById('statusText');
+const infoBanner = document.getElementById('infoBanner');
+const debugPanel = document.getElementById('debugPanel');
+const debugMessage = document.getElementById('debugMessage');
+const debugDetails = document.getElementById('debugDetails');
+const repoLink = document.getElementById('repoLink');
+
+// Configurar enlace al repo
+repoLink.href = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
+repoLink.textContent = `📦 ${REPO_OWNER}/${REPO_NAME}`;
+
+// ============================================
+// RENDERIZADO DE JUEGOS
+// ============================================
+function renderGames(games, isFromAPI = false) {
+    grid.innerHTML = '';
+    gameCount.textContent = `${games.length} JUEGO${games.length !== 1 ? 'S' : ''}`;
+
+    if (games.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">
+                <p style="font-size:1.2rem;margin-bottom:10px;">📭 No se han encontrado juegos</p>
+                <p style="font-size:0.9rem;">Sube archivos .html al repositorio para verlos aquí.</p>
+            </div>
+        `;
+        return;
+    }
+
+    games.forEach((game, index) => {
+        const card = document.createElement('a');
+        card.className = 'game-card';
+        card.href = game.href;
+
+        const tagClass = isFromAPI ? 'tag-api' : `tag-${game.tag || 'live'}`;
+        const tagText = isFromAPI ? '🔗 API' : (game.tagText || 'JUGABLE');
+
+        card.innerHTML = `
+            <div class="game-tag ${tagClass}">${tagText}</div>
+            <div class="game-icon">${game.icon || '🎮'}</div>
+            <div class="game-title">${game.name}</div>
+            <div class="game-desc">${game.desc || ''}</div>
+        `;
+
+        grid.appendChild(card);
+    });
+}
+
+// ============================================
+// ESTADO DE LA UI
+// ============================================
+function setStatus(state, text) {
+    statusDot.className = 'status-dot ' + state;
+    statusText.innerHTML = text;
+}
+
+function showDebug(message, details) {
+    debugPanel.classList.add('visible');
+    debugMessage.textContent = message;
+    debugDetails.textContent = details;
+}
+
+// ============================================
+// ESCÁNER DE GITHUB API
+// ============================================
+async function scanGitHubRepo() {
+    const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/`;
+    
+    setStatus('loading', '<strong>Escaneando</strong> · Conectando con GitHub API...');
+
+    try {
+        const response = await fetch(apiUrl, {
+            headers: { 'Accept': 'application/vnd.github.v3+json' }
         });
 
-        // ============================================
-        // CARGA OPCIONAL DESDE GITHUB
-        // ============================================
-        async function fetchRealGames() {
-            try {
-                const apiUrl = "https://api.github.com/repos/CoqueTornado/llm-test-plaza/contents/";
-                const response = await fetch(apiUrl);
-                
-                if (!response.ok) throw new Error("API failed");
-                
-                const items = await response.json();
-                const folders = items
-                    .filter(item => item.type === "dir" && !item.name.startsWith(".") && item.name !== "docs")
-                    .map(f => ({
-                        name: f.name,
-                        icon: ["🕹️","🎮","👾","🎲","⚡","🎯","🚀","🎪"][Math.floor(Math.random()*8)],
-                        desc: "Prototipo del laboratorio",
-                        tag: "live",
-                        tagText: "JUGABLE",
-                        href: `${f.name}/index.html`
-                    }));
-
-                // Si hay carpetas reales, reemplazar el catálogo demo
-                if (folders.length > 0) {
-                    console.log(`✅ ${folders.length} juegos detectados desde GitHub`);
-                    renderGames(folders);
-                }
-            } catch (err) {
-                console.log("ℹ️ Usando catálogo local (API no disponible)");
-            }
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-    </script>
+
+        const items = await response.json();
+        
+        // 🎯 CLAVE: Buscar archivos .html en la raíz (no solo carpetas)
+        const htmlFiles = items.filter(item => 
+            item.type === 'file' && 
+            item.name.endsWith('.html') && 
+            item.name !== 'index.html'  // Excluir el propio index
+        );
+
+        // También buscar carpetas con index.html dentro
+        const folders = items.filter(item => 
+            item.type === 'dir' && 
+            !item.name.startsWith('.') &&
+            item.name !== 'docs'
+        );
+
+        console.log('📁 Archivos HTML encontrados:', htmlFiles.map(f => f.name));
+        console.log('📂 Carpetas encontradas:', folders.map(f => f.name));
+
+        // Construir lista de juegos
+        const apiGames = [];
+
+        // Añadir archivos HTML sueltos
+        htmlFiles.forEach(file => {
+            apiGames.push({
+                name: file.name.replace('.html', '').replace(/-/g, ' ').replace(/_/g, ' '),
+                icon: ['🎮', '🕹️', '👾', '🎲', '⚡', '🎯'][Math.floor(Math.random() * 6)],
+                desc: 'Prototipo detectado automáticamente',
+                href: file.name
+            });
+        });
+
+        // Añadir carpetas (asumiendo que tienen index.html dentro)
+        folders.forEach(folder => {
+            apiGames.push({
+                name: folder.name.replace(/-/g, ' ').replace(/_/g, ' '),
+                icon: ['🎮', '🕹️', '👾', '🎲', '⚡', '🎯'][Math.floor(Math.random() * 6)],
+                desc: 'Proyecto en carpeta',
+                href: `${folder.name}/index.html`
+            });
+        });
+
+        if (apiGames.length > 0) {
+            setStatus('', `<strong>✅ Conectado</strong> · ${apiGames.length} juego(s) detectado(s) en GitHub`);
+            renderGames(apiGames, true);
+            return true;
+        } else {
+            throw new Error('No se encontraron archivos HTML ni carpetas de juegos en el repositorio.');
+        }
+
+    } catch (error) {
+        console.error('❌ Error al escanear GitHub:', error);
+        
+        setStatus('error', `<strong>⚠️ API no disponible</strong> · Mostrando catálogo local`);
+        
+        showDebug(
+            `No se pudo conectar con la API de GitHub. Motivo: ${error.message}`,
+            `URL intentada: ${apiUrl}\n\n` +
+            `Posibles causas:\n` +
+            `• Límite de peticiones de GitHub (60/hora sin token)\n` +
+            `• El repositorio es privado\n` +
+            `• Error de CORS en el navegador\n` +
+            `• El nombre del repositorio no es correcto\n\n` +
+            `Solución: Los juegos del catálogo local siguen funcionando.`
+        );
+
+        return false;
+    }
+}
+
+// ============================================
+// INICIALIZACIÓN
+// ============================================
+async function init() {
+    // 1. Mostrar catálogo local INMEDIATAMENTE (garantiza que siempre se ve algo)
+    renderGames(LOCAL_GAMES, false);
+    setStatus('', `<strong>Catálogo local</strong> · ${LOCAL_GAMES.length} juego(s) disponibles`);
+
+    // 2. Intentar mejorar con la API de GitHub
+    const apiSuccess = await scanGitHubRepo();
+
+    if (apiSuccess) {
+        infoBanner.classList.remove('visible');
+    } else {
+        infoBanner.classList.add('visible');
+    }
+}
+
+// Arrancar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
+</script>
+
 </body>
 </html>
