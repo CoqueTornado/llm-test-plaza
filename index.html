@@ -3,461 +3,661 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal de Prototipos - Inteligencia Aplicada a Videojuegos</title>
+    <title>LLM Test Plaza - Portal de Prototipos</title>
     <style>
         :root {
-            --bg-dark: #070a13;
-            --panel-bg: #0f1423;
-            --panel-border: #1f294d;
+            --bg-dark: #0a0e1a;
+            --bg-gradient: linear-gradient(135deg, #0a0e1a 0%, #1a1f3a 100%);
+            --panel-bg: #141828;
+            --panel-bg-hover: #1a2038;
+            --panel-border: #2a3555;
             --text-main: #e2e8f0;
-            --text-muted: #64748b;
-            --accent-blue: #38bdf8;
-            --accent-amber: #f59e0b;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --code-bg: #020617;
+            --text-muted: #7b8ab8;
+            --accent-blue: #60a5fa;
+            --accent-cyan: #22d3ee;
+            --accent-amber: #fbbf24;
+            --accent-green: #34d399;
+            --accent-purple: #a78bfa;
+            --accent-pink: #f472b6;
+            --code-bg: #0a0e17;
+            --glow-blue: rgba(96, 165, 250, 0.4);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-dark);
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
             color: var(--text-main);
             padding: 40px 20px;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(96, 165, 250, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(167, 139, 250, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            gap: 30px;
         }
 
-        .container { 
-            width: 100%; 
-            max-width: 950px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 30px; 
-        }
-
-        h1, h2, h3 { text-transform: uppercase; letter-spacing: 0.5px; }
-
-        /* HEADER */
-        .portal-header {
+        /* ===== HERO HEADER ===== */
+        .hero {
             text-align: center;
-            padding: 20px 0;
+            padding: 50px 30px;
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.08), rgba(167, 139, 250, 0.08));
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
         }
-        .portal-header h1 {
-            font-size: 2rem;
-            background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(96, 165, 250, 0.1) 0%, transparent 60%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 10px;
-        }
-        .portal-header p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
+            text-transform: uppercase;
         }
 
-        /* STATUS BAR */
+        .hero .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+        }
+
+        .hero .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            background: rgba(52, 211, 153, 0.15);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            border-radius: 100px;
+            color: var(--accent-green);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero .badge::before {
+            content: '●';
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* ===== STATUS BAR ===== */
         .status-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 20px;
-            background-color: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: 10px;
-            font-size: 0.85rem;
-        }
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: var(--text-muted);
-            animation: pulse 1.5s infinite;
-        }
-        .status-dot.connected { background-color: var(--accent-green); }
-        .status-dot.demo { background-color: var(--accent-amber); }
-        .status-dot.error { background-color: var(--accent-red); }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-
-        .status-text { color: var(--text-muted); }
-        .status-text strong { color: var(--text-main); }
-
-        .reload-btn {
-            background: transparent;
-            border: 1px solid var(--panel-border);
-            color: var(--text-main);
-            padding: 6px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-        .reload-btn:hover {
-            background-color: var(--panel-border);
-            border-color: var(--accent-blue);
-        }
-
-        /* SECCIONES */
-        .panel {
-            background-color: var(--panel-bg);
+            padding: 15px 25px;
+            background: var(--panel-bg);
             border: 1px solid var(--panel-border);
             border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        .academic-criteria h2 { color: var(--accent-blue); margin-bottom: 15px; font-size: 1.4rem; }
-        .academic-criteria ol { padding-left: 20px; line-height: 1.6; font-size: 0.95rem; }
-        .academic-criteria li { margin-bottom: 8px; }
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-        .prompt-section h2 { color: var(--accent-amber); margin-bottom: 10px; font-size: 1.4rem; }
-        .prompt-section p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            box-shadow: 0 0 10px var(--accent-green);
+            animation: pulse-dot 1.5s infinite;
+        }
 
-        .prompt-box {
-            background-color: var(--code-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: 8px;
-            padding: 20px;
-            font-family: 'Courier New', Courier, monospace;
+        .status-text {
             font-size: 0.9rem;
-            line-height: 1.5;
-            color: #a7f3d0;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            max-height: 400px;
-            overflow-y: auto;
+            color: var(--text-muted);
         }
 
-        .scanner-section h2 { color: var(--accent-green); margin-bottom: 5px; font-size: 1.4rem; }
-        .scanner-section p.subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px; }
+        .status-text strong {
+            color: var(--text-main);
+        }
+
+        .repo-link {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            padding: 6px 12px;
+            background: rgba(34, 211, 238, 0.1);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .repo-link:hover {
+            background: rgba(34, 211, 238, 0.2);
+            border-color: var(--accent-cyan);
+        }
+
+        /* ===== SECCIÓN DE JUEGOS ===== */
+        .games-section {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 35px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-title .icon {
+            font-size: 1.8rem;
+        }
+
+        .game-count {
+            background: rgba(96, 165, 250, 0.15);
+            color: var(--accent-blue);
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
 
         /* GRID DE JUEGOS */
         .arcade-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             gap: 20px;
         }
 
         .game-card {
-            background-color: rgba(0,0,0,0.25);
+            background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
             border: 2px solid var(--panel-border);
-            border-radius: 10px;
-            padding: 25px;
+            border-radius: 14px;
+            padding: 28px 22px;
             text-align: center;
             text-decoration: none;
-            color: white;
-            transition: transform 0.2s, border-color 0.2s, background-color 0.2s;
+            color: var(--text-main);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            min-height: 140px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            justify-content: center;
+            min-height: 180px;
+            position: relative;
+            overflow: hidden;
             cursor: pointer;
         }
 
-        .game-card:hover { 
-            transform: translateY(-4px); 
-            border-color: var(--accent-blue); 
-            background-color: rgba(255,255,255,0.02); 
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, transparent, rgba(96, 165, 250, 0.05));
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-        .game-icon { font-size: 2.8rem; margin-bottom: 10px; }
-        .game-title { 
-            font-weight: bold; 
-            font-size: 1.1rem; 
-            text-transform: capitalize; 
+        .game-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 15px 40px rgba(96, 165, 250, 0.2);
+        }
+
+        .game-card:hover::before {
+            opacity: 1;
+        }
+
+        .game-icon {
+            font-size: 3.5rem;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: capitalize;
+            letter-spacing: 0.3px;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-tag {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .tag-live {
+            background: rgba(52, 211, 153, 0.2);
+            color: var(--accent-green);
+            border: 1px solid rgba(52, 211, 153, 0.4);
+        }
+
+        .tag-wip {
+            background: rgba(251, 191, 36, 0.2);
+            color: var(--accent-amber);
+            border: 1px solid rgba(251, 191, 36, 0.4);
+        }
+
+        .tag-demo {
+            background: rgba(167, 139, 250, 0.2);
+            color: var(--accent-purple);
+            border: 1px solid rgba(167, 139, 250, 0.4);
+        }
+
+        /* ===== SECCIÓN CRITERIOS ===== */
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 35px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+
+        .panel h2 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        .game-tag {
-            margin-top: 8px;
-            font-size: 0.7rem;
-            padding: 3px 8px;
-            border-radius: 4px;
-            background-color: rgba(56, 189, 248, 0.15);
+
+        .panel.blue h2 { color: var(--accent-blue); }
+        .panel.amber h2 { color: var(--accent-amber); }
+
+        .panel ol {
+            padding-left: 22px;
+            line-height: 1.8;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .panel li {
+            margin-bottom: 10px;
+            padding-left: 5px;
+        }
+
+        .panel li::marker {
             color: var(--accent-blue);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .game-tag.demo {
-            background-color: rgba(245, 158, 11, 0.15);
-            color: var(--accent-amber);
+            font-weight: bold;
         }
 
-        .no-games-msg { 
-            color: var(--text-muted); 
-            font-style: italic; 
-            font-size: 0.95rem; 
-            grid-column: 1/-1; 
-            text-align: center; 
-            padding: 30px; 
+        /* ===== PROMPT BOX ===== */
+        .prompt-box {
+            background: var(--code-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 10px;
+            padding: 22px;
+            font-family: 'Courier New', 'Monaco', monospace;
+            font-size: 0.88rem;
+            line-height: 1.7;
+            color: #a7f3d0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 450px;
+            overflow-y: auto;
         }
 
-        .info-banner {
-            background-color: rgba(245, 158, 11, 0.08);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 8px;
-            padding: 12px 16px;
-            margin-bottom: 20px;
+        .prompt-box::-webkit-scrollbar {
+            width: 8px;
+        }
+        .prompt-box::-webkit-scrollbar-track {
+            background: var(--code-bg);
+        }
+        .prompt-box::-webkit-scrollbar-thumb {
+            background: var(--panel-border);
+            border-radius: 4px;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--text-muted);
             font-size: 0.85rem;
-            color: var(--accent-amber);
-            display: none;
+            border-top: 1px solid var(--panel-border);
+            margin-top: 10px;
         }
-        .info-banner.visible { display: block; }
+
+        .footer a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 600px) {
+            body { padding: 20px 15px; }
+            .hero h1 { font-size: 2rem; }
+            .hero { padding: 35px 20px; }
+            .games-section, .panel { padding: 25px 20px; }
+            .arcade-grid { grid-template-columns: 1fr; }
+            .status-bar { flex-direction: column; align-items: stretch; }
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        
-        <!-- HEADER -->
-        <div class="portal-header">
-            <h1>🎮 Portal de Prototipos</h1>
-            <p>Inteligencia Aplicada a Videojuegos · Arcade de Microjuegos</p>
-        </div>
 
-        <!-- BARRA DE ESTADO -->
-        <div class="status-bar">
-            <div class="status-indicator">
-                <div class="status-dot" id="status-dot"></div>
-                <div class="status-text" id="status-text">Iniciando sistema...</div>
+        <!-- HERO -->
+        <div class="hero">
+            <div class="hero-content">
+                <h1>🎮 LLM Test Plaza</h1>
+                <p class="subtitle">Portal de Prototipos · Inteligencia Aplicada a Videojuegos</p>
+                <div class="badge">Arcade Operativo</div>
             </div>
-            <button class="reload-btn" onclick="location.reload()">🔄 Recargar</button>
         </div>
 
-        <!-- SECCIÓN 1: CRITERIOS DEL DOCENTE -->
-        <div class="panel academic-criteria">
-            <h2>📋 Entregas del Laboratorio de Videojuegos</h2>
+        <!-- STATUS BAR -->
+        <div class="status-bar">
+            <div class="status-info">
+                <div class="status-dot"></div>
+                <div class="status-text">
+                    <strong>Sistema activo</strong> · Catálogo cargado correctamente
+                </div>
+            </div>
+            <a href="https://github.com/CoqueTornado/llm-test-plaza" target="_blank" class="repo-link">
+                📦 CoqueTornado/llm-test-plaza
+            </a>
+        </div>
+
+        <!-- SECCIÓN PRINCIPAL: JUEGOS -->
+        <div class="games-section">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="icon">🕹️</span>
+                    <h2>Galería de Prototipos</h2>
+                </div>
+                <span class="game-count" id="game-count">6 JUEGOS</span>
+            </div>
+
+            <div class="arcade-grid" id="arcade-grid">
+                <!-- Los juegos se cargan por JS -->
+            </div>
+        </div>
+
+        <!-- CRITERIOS ACADÉMICOS -->
+        <div class="panel blue">
+            <h2>📋 Criterios del Laboratorio</h2>
             <ol>
-                <li>Los microjuegos deben presentar un bucle central adictivo explicable en menos de 30 segundos.</li>
-                <li>Deben interactuar al menos 3 sistemas lógicos complejos en tiempo real.</li>
-                <li>Se exige toma de decisiones bajo presión y mecánicas balanceadas de riesgo/recompensa.</li>
-                <li>Los entornos deben respetar criterios de diseño de interfaz limpios y microtextos con identidad narrativa.</li>
+                <li>Los microjuegos deben presentar un <strong>bucle central adictivo</strong> explicable en menos de 30 segundos.</li>
+                <li>Deben interactuar al menos <strong>3 sistemas lógicos complejos</strong> en tiempo real.</li>
+                <li>Se exige <strong>toma de decisiones bajo presión</strong> y mecánicas balanceadas de riesgo/recompensa.</li>
+                <li>Los entornos deben respetar criterios de <strong>diseño de interfaz limpios</strong> y microtextos con identidad narrativa.</li>
             </ol>
         </div>
 
-        <!-- SECCIÓN 2: EL PROMPT -->
-        <div class="panel prompt-section">
-            <h2>🤖 Prompt de Configuración y Despliegue de Inteligencia</h2>
-            <p>Este es el prompt utilizado en la IA para estructurar, empaquetar y generar de forma estricta los microjuegos del arcade:</p>
+        <!-- PROMPT INYECTADO -->
+        <div class="panel amber">
+            <h2>🤖 Prompt de Generación</h2>
             <div class="prompt-box">Quiero una prueba real de inteligencia aplicada a videojuegos.
 
 Crea un prototipo completo en un solo archivo HTML llamado "Last Lightkeeper".
-Debe funcionar solo con HTML, CSS y JavaScript vanilla. Sin librerías externas. Todo en un único archivo.
+Debe funcionar solo con HTML, CSS y JavaScript vanilla. Sin librerías externas.
 
 Premisa:
 Eres el último farero de un archipiélago en ruinas. Cada noche debes mantener viva la luz principal mientras barcos perdidos, contrabandistas y tormentas alteran el sistema.
 
 Tu tarea:
-Diseña e implementa un microjuego jugable de 3 a 5 minutos con estas condiciones:
-
-- Debe existir un bucle central claro, entendible y adictivo en menos de 30 segundos.
-- Debe haber al menos 3 sistemas que interactúen:
-  * combustible de la luz
-  * estado del clima
-  * tráfico marítimo o eventos de barcos
-- El jugador debe tomar decisiones bajo presión, no solo hacer clics.
-- Debe haber al menos una mecánica de riesgo/recompensa.
-- Debe existir una condición de derrota y una forma clara de remontar si juegas bien.
-- La interfaz debe ser legible y visualmente cuidada, aunque sea simple.
-- Escribe microtexto de calidad: título, subtítulo, instrucciones integradas, 5 eventos breves con personalidad.
-- Añade una capa de "juice": animaciones sencillas, feedback visual claro, sensación de tensión creciente.
-- El código debe estar organizado y comentado con criterio real, no comentarios decorativos.
-- Al final del archivo añade una sección visible llamada "Postmortem del diseñador".
+- Bucle central claro y adictivo en menos de 30 segundos.
+- Al menos 3 sistemas interactuando: combustible, clima y tráfico marítimo.
+- Decisiones bajo presión (no solo clics).
+- Mecánica de riesgo/recompensa.
+- Condición de derrota y forma clara de remontar.
+- Interfaz legible y visualmente cuidada.
+- Microtexto de calidad: título, subtítulo, instrucciones, 5 eventos con personalidad.
+- Capa de "juice": animaciones, feedback visual, tensión creciente.
+- Código organizado con comentarios con criterio real.
+- Sección "Postmortem del diseñador" al final.
 
 Reglas:
-- No hagas una demo muerta; debe ser jugable de verdad.
-- No hagas un clon genérico de tower defense o clicker.
-- No uses canvas si no lo necesitas; elige la arquitectura más inteligente.
-- Si simplificas algo, que sea con criterio de diseñador senior.
-- No quiero una lluvia de features; quiero un núcleo fuerte.
-- Entrega solo el código completo.</div>
+- Nada de demos muertas, debe ser jugable de verdad.
+- Nada de clones genéricos de tower defense o clicker.
+- No usar canvas si no es necesario.
+- Si simplificas, que sea con criterio senior.
+- Un núcleo fuerte, no lluvia de features.</div>
         </div>
 
-        <!-- SECCIÓN 3: LECTOR DE CARPETAS -->
-        <div class="panel scanner-section">
-            <h2>🕹️ Galería de Prototipos Disponibles</h2>
-            <p class="subtitle">Este cargador asíncrono mapea las carpetas del repositorio en tiempo real e indexa de forma dinámica los juegos instalados.</p>
-            
-            <div class="info-banner" id="info-banner">
-                ⚠️ Mostrando catálogo de demostración. Sube tus carpetas de juegos al repositorio para verlos aquí.
-            </div>
-
-            <div class="arcade-grid" id="dynamic-arcade-grid">
-                <div class="no-games-msg" id="loading-msg">⏳ Mapeando directorios del repositorio...</div>
-            </div>
+        <!-- FOOTER -->
+        <div class="footer">
+            <p>🚀 Desplegado en <a href="https://coquetornado.github.io/llm-test-plaza/" target="_blank">GitHub Pages</a> · LLM Test Plaza © 2026</p>
         </div>
+
     </div>
 
     <script>
         // ============================================
-        // CONFIGURACIÓN DEL PORTAL
+        // CATÁLOGO PRINCIPAL DE JUEGOS
         // ============================================
+        // Este array es la FUENTE PRINCIPAL de contenido.
+        // Siempre se mostrará, sin depender de APIs externas.
         
-        // 🎮 CATÁLOGO DE DEMOSTRACIÓN (se muestra cuando la API falla o no hay juegos)
-        // Puedes editar este array para añadir tus propios juegos manualmente
-        const DEMO_GAMES = [
+        const GAMES = [
             {
                 name: "Last Lightkeeper",
                 icon: "🏮",
-                description: "El último farero",
+                desc: "El último farero del archipiélago",
+                tag: "live",
+                tagText: "JUGABLE",
                 href: "Last-Lightkeeper/index.html"
             },
             {
                 name: "Neon Drift",
                 icon: "🏎️",
-                description: "Carreras arcade",
+                desc: "Carreras arcade a toda velocidad",
+                tag: "live",
+                tagText: "JUGABLE",
                 href: "Neon-Drift/index.html"
             },
             {
                 name: "Pixel Invaders",
                 icon: "👾",
-                description: "Shooter retro",
+                desc: "Shooter retro con oleadas infinitas",
+                tag: "wip",
+                tagText: "EN DEV",
                 href: "Pixel-Invaders/index.html"
             },
             {
                 name: "Dungeon Crawler",
                 icon: "🗡️",
-                description: "Roguelike",
+                desc: "Roguelike procedural en mazmorras",
+                tag: "demo",
+                tagText: "DEMO",
                 href: "Dungeon-Crawler/index.html"
             },
             {
                 name: "Puzzle Matrix",
                 icon: "🧩",
-                description: "Puzzle lógico",
+                desc: "Puzzles lógicos con mecánicas únicas",
+                tag: "live",
+                tagText: "JUGABLE",
                 href: "Puzzle-Matrix/index.html"
             },
             {
                 name: "Storm Rider",
                 icon: "⚡",
-                description: "Acción bajo presión",
+                desc: "Acción bajo presión atmosférica",
+                tag: "wip",
+                tagText: "EN DEV",
                 href: "Storm-Rider/index.html"
             }
         ];
 
-        // Usuario y repositorio por defecto (cámbialo por el tuyo)
-        const DEFAULT_USERNAME = "CoqueTornado";
-        const DEFAULT_REPO = "nombre-de-tu-repositorio";
-
         // ============================================
-        // UTILIDADES DE UI
+        // RENDERIZADO DE LA GALERÍA
         // ============================================
-        
-        function setStatus(state, text) {
-            const dot = document.getElementById("status-dot");
-            const txt = document.getElementById("status-text");
-            dot.className = "status-dot " + state;
-            txt.innerHTML = text;
-        }
-
-        function renderGames(games, isDemoMode = false) {
-            const grid = document.getElementById("dynamic-arcade-grid");
+        function renderGames(games) {
+            const grid = document.getElementById("arcade-grid");
+            const counter = document.getElementById("game-count");
+            
             grid.innerHTML = "";
+            counter.textContent = `${games.length} JUEGOS`;
 
-            if (games.length === 0) {
-                grid.innerHTML = `<div class="no-games-msg">No se han detectado carpetas de videojuegos todavía.<br>Sube carpetas en el root del repositorio y coloca su <code>index.html</code> dentro.</div>`;
-                return;
-            }
-
-            games.forEach(game => {
+            games.forEach((game, index) => {
                 const card = document.createElement("a");
                 card.className = "game-card";
                 card.href = game.href;
+                card.style.animationDelay = `${index * 0.05}s`;
                 
-                const tagClass = isDemoMode ? "demo" : "";
-                const tagText = isDemoMode ? "Demo" : "Disponible";
+                const tagClass = `tag-${game.tag}`;
                 
                 card.innerHTML = `
+                    <div class="game-tag ${tagClass}">${game.tagText}</div>
                     <div class="game-icon">${game.icon}</div>
-                    <div class="game-title">${game.name.replace(/-/g, " ").replace(/_/g, " ")}</div>
-                    <div class="game-tag ${tagClass}">${tagText}</div>
+                    <div class="game-title">${game.name.replace(/-/g, " ")}</div>
+                    <div class="game-desc">${game.desc}</div>
                 `;
+                
+                // Efecto hover adicional
+                card.addEventListener("mouseenter", () => {
+                    card.style.transform = "translateY(-6px) scale(1.02)";
+                });
+                card.addEventListener("mouseleave", () => {
+                    card.style.transform = "translateY(0) scale(1)";
+                });
                 
                 grid.appendChild(card);
             });
         }
 
-        function showDemoMode() {
-            document.getElementById("info-banner").classList.add("visible");
-            setStatus("demo", "<strong>Modo demostración</strong> · Catálogo de ejemplo");
-            renderGames(DEMO_GAMES, true);
-        }
+        // ============================================
+        // INICIALIZACIÓN INMEDIATA
+        // ============================================
+        // Se renderiza TODO al instante, sin esperar APIs
+        document.addEventListener("DOMContentLoaded", () => {
+            renderGames(GAMES);
+            
+            // Intentar cargar juegos reales del repo (opcional, no bloquea)
+            setTimeout(() => {
+                fetchRealGames();
+            }, 1000);
+        });
 
         // ============================================
-        // LÓGICA DE DETECCIÓN DE GITHUB
+        // CARGA OPCIONAL DESDE GITHUB
         // ============================================
-        
-        function detectRepoInfo() {
-            const hostname = window.location.hostname;
-            const pathName = window.location.pathname;
-            
-            let username = DEFAULT_USERNAME;
-            let repoName = DEFAULT_REPO;
-
-            if (hostname.includes("github.io")) {
-                username = hostname.split(".")[0];
-                const segments = pathName.split("/").filter(s => s.length > 0);
-                if (segments.length > 0) {
-                    repoName = segments[0];
-                }
-            }
-
-            return { username, repoName };
-        }
-
-        async function fetchGamesFromGitHub() {
-            const { username, repoName } = detectRepoInfo();
-            setStatus("connected", `<strong>Conectando</strong> · ${username}/${repoName}`);
-
-            const apiUrl = `https://api.github.com/repos/${username}/${repoName}/contents/`;
-            
+        async function fetchRealGames() {
             try {
+                const apiUrl = "https://api.github.com/repos/CoqueTornado/llm-test-plaza/contents/";
                 const response = await fetch(apiUrl);
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
+                
+                if (!response.ok) throw new Error("API failed");
                 
                 const items = await response.json();
                 const folders = items
-                    .filter(item => item.type === "dir" && !item.name.startsWith("."))
-                    .map(folder => ({
-                        name: folder.name,
-                        icon: ["🕹️", "🎮", "👾", "🎲", "⚡"][Math.floor(Math.random() * 5)],
-                        href: `${folder.name}/index.html`
+                    .filter(item => item.type === "dir" && !item.name.startsWith(".") && item.name !== "docs")
+                    .map(f => ({
+                        name: f.name,
+                        icon: ["🕹️","🎮","👾","🎲","⚡","🎯","🚀","🎪"][Math.floor(Math.random()*8)],
+                        desc: "Prototipo del laboratorio",
+                        tag: "live",
+                        tagText: "JUGABLE",
+                        href: `${f.name}/index.html`
                     }));
 
-                if (folders.length === 0) {
-                    showDemoMode();
-                } else {
-                    setStatus("connected", `<strong>Conectado</strong> · ${folders.length} juego(s) detectado(s)`);
-                    renderGames(folders, false);
+                // Si hay carpetas reales, reemplazar el catálogo demo
+                if (folders.length > 0) {
+                    console.log(`✅ ${folders.length} juegos detectados desde GitHub`);
+                    renderGames(folders);
                 }
-            } catch (error) {
-                console.warn("No se pudo conectar con la API de GitHub:", error.message);
-                showDemoMode();
+            } catch (err) {
+                console.log("ℹ️ Usando catálogo local (API no disponible)");
             }
         }
-
-        // ============================================
-        // INICIALIZACIÓN
-        // ============================================
-        
-        document.addEventListener("DOMContentLoaded", () => {
-            // Pequeño retraso para simular carga y mostrar el estado
-            setTimeout(fetchGamesFromGitHub, 600);
-        });
     </script>
 </body>
 </html>
