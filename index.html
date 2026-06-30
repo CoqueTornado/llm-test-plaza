@@ -14,14 +14,11 @@
             --accent-blue: #38bdf8;
             --accent-amber: #f59e0b;
             --accent-green: #10b981;
+            --accent-red: #ef4444;
             --code-bg: #020617;
         }
 
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -42,56 +39,91 @@
             gap: 30px; 
         }
 
-        h1, h2, h3 { 
-            text-transform: uppercase; 
-            letter-spacing: 0.5px; 
-        }
-        
-        /* 1. SECCIÓN ENUNCIADO GENERAL */
-        .academic-criteria {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
+        h1, h2, h3 { text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .academic-criteria h2 { 
-            color: var(--accent-blue); 
-            margin-bottom: 15px; 
-            font-size: 1.4rem; 
+        /* HEADER */
+        .portal-header {
+            text-align: center;
+            padding: 20px 0;
         }
-
-        .academic-criteria ol { 
-            padding-left: 20px; 
-            line-height: 1.6; 
-            font-size: 0.95rem; 
-        }
-
-        .academic-criteria li { 
-            margin-bottom: 8px; 
-        }
-
-        /* 2. SECCIÓN DEL PROMPT INYECTADO */
-        .prompt-section {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-
-        .prompt-section h2 {
-            color: var(--accent-amber);
+        .portal-header h1 {
+            font-size: 2rem;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 10px;
-            font-size: 1.4rem;
+        }
+        .portal-header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
         }
 
-        .prompt-section p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 15px;
+        /* STATUS BAR */
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 10px;
+            font-size: 0.85rem;
         }
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--text-muted);
+            animation: pulse 1.5s infinite;
+        }
+        .status-dot.connected { background-color: var(--accent-green); }
+        .status-dot.demo { background-color: var(--accent-amber); }
+        .status-dot.error { background-color: var(--accent-red); }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .status-text { color: var(--text-muted); }
+        .status-text strong { color: var(--text-main); }
+
+        .reload-btn {
+            background: transparent;
+            border: 1px solid var(--panel-border);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .reload-btn:hover {
+            background-color: var(--panel-border);
+            border-color: var(--accent-blue);
+        }
+
+        /* SECCIONES */
+        .panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .academic-criteria h2 { color: var(--accent-blue); margin-bottom: 15px; font-size: 1.4rem; }
+        .academic-criteria ol { padding-left: 20px; line-height: 1.6; font-size: 0.95rem; }
+        .academic-criteria li { margin-bottom: 8px; }
+
+        .prompt-section h2 { color: var(--accent-amber); margin-bottom: 10px; font-size: 1.4rem; }
+        .prompt-section p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; }
 
         .prompt-box {
             background-color: var(--code-bg);
@@ -108,27 +140,10 @@
             overflow-y: auto;
         }
 
-        /* 3. LECTOR AUTOMÁTICO DE SUB-JUEGOS */
-        .scanner-section {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
+        .scanner-section h2 { color: var(--accent-green); margin-bottom: 5px; font-size: 1.4rem; }
+        .scanner-section p.subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px; }
 
-        .scanner-section h2 { 
-            color: var(--accent-green); 
-            margin-bottom: 5px; 
-            font-size: 1.4rem; 
-        }
-
-        .scanner-section p.subtitle { 
-            color: var(--text-muted); 
-            font-size: 0.9rem; 
-            margin-bottom: 25px; 
-        }
-        
+        /* GRID DE JUEGOS */
         .arcade-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -150,6 +165,7 @@
             align-items: center;
             min-height: 140px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
         }
 
         .game-card:hover { 
@@ -158,16 +174,26 @@
             background-color: rgba(255,255,255,0.02); 
         }
 
-        .game-icon { 
-            font-size: 2.8rem; 
-            margin-bottom: 10px; 
-        }
-
+        .game-icon { font-size: 2.8rem; margin-bottom: 10px; }
         .game-title { 
             font-weight: bold; 
             font-size: 1.1rem; 
             text-transform: capitalize; 
             letter-spacing: 0.5px;
+        }
+        .game-tag {
+            margin-top: 8px;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background-color: rgba(56, 189, 248, 0.15);
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .game-tag.demo {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: var(--accent-amber);
         }
 
         .no-games-msg { 
@@ -178,13 +204,41 @@
             text-align: center; 
             padding: 30px; 
         }
+
+        .info-banner {
+            background-color: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: var(--accent-amber);
+            display: none;
+        }
+        .info-banner.visible { display: block; }
     </style>
 </head>
 <body>
 
     <div class="container">
+        
+        <!-- HEADER -->
+        <div class="portal-header">
+            <h1>🎮 Portal de Prototipos</h1>
+            <p>Inteligencia Aplicada a Videojuegos · Arcade de Microjuegos</p>
+        </div>
+
+        <!-- BARRA DE ESTADO -->
+        <div class="status-bar">
+            <div class="status-indicator">
+                <div class="status-dot" id="status-dot"></div>
+                <div class="status-text" id="status-text">Iniciando sistema...</div>
+            </div>
+            <button class="reload-btn" onclick="location.reload()">🔄 Recargar</button>
+        </div>
+
         <!-- SECCIÓN 1: CRITERIOS DEL DOCENTE -->
-        <div class="academic-criteria">
+        <div class="panel academic-criteria">
             <h2>📋 Entregas del Laboratorio de Videojuegos</h2>
             <ol>
                 <li>Los microjuegos deben presentar un bucle central adictivo explicable en menos de 30 segundos.</li>
@@ -194,8 +248,8 @@
             </ol>
         </div>
 
-        <!-- SECCIÓN 2: EL PROMPT DE GENERACIÓN REQUERIDO -->
-        <div class="prompt-section">
+        <!-- SECCIÓN 2: EL PROMPT -->
+        <div class="panel prompt-section">
             <h2>🤖 Prompt de Configuración y Despliegue de Inteligencia</h2>
             <p>Este es el prompt utilizado en la IA para estructurar, empaquetar y generar de forma estricta los microjuegos del arcade:</p>
             <div class="prompt-box">Quiero una prueba real de inteligencia aplicada a videojuegos.
@@ -209,117 +263,200 @@ Eres el último farero de un archipiélago en ruinas. Cada noche debes mantener 
 Tu tarea:
 Diseña e implementa un microjuego jugable de 3 a 5 minutos con estas condiciones:
 
-Debe existir un bucle central claro, entendible y adictivo en menos de 30 segundos.
-Debe haber al menos 3 sistemas que interactúen:
-combustible de la luz
-estado del clima
-tráfico marítimo o eventos de barcos
-El jugador debe tomar decisiones bajo presión, no solo hacer clics.
-Debe haber al menos una mecánica de riesgo/recompensa.
-Debe existir una condición de derrota y una forma clara de remontar si juegas bien.
-La interfaz debe ser legible y visualmente cuidada, aunque sea simple.
-Escribe microtexto de calidad:
-título
-subtítulo
-instrucciones integradas en la interfaz
-5 eventos breves con personalidad
-Añade una capa de "juice":
-animaciones sencillas
-feedback visual claro
-sensación de tensión creciente
-El código debe estar organizado y comentado con criterio real, no comentarios decorativos.
-Al final del archivo añade una sección visible llamada "Postmortem del diseñador" donde expliques:
-cuál es la fantasía central del juego
-qué sistema es el más frágil
-qué recortarías primero si tuvieras que convertirlo en un juego comercial pequeño
-Reglas:
+- Debe existir un bucle central claro, entendible y adictivo en menos de 30 segundos.
+- Debe haber al menos 3 sistemas que interactúen:
+  * combustible de la luz
+  * estado del clima
+  * tráfico marítimo o eventos de barcos
+- El jugador debe tomar decisiones bajo presión, no solo hacer clics.
+- Debe haber al menos una mecánica de riesgo/recompensa.
+- Debe existir una condición de derrota y una forma clara de remontar si juegas bien.
+- La interfaz debe ser legible y visualmente cuidada, aunque sea simple.
+- Escribe microtexto de calidad: título, subtítulo, instrucciones integradas, 5 eventos breves con personalidad.
+- Añade una capa de "juice": animaciones sencillas, feedback visual claro, sensación de tensión creciente.
+- El código debe estar organizado y comentado con criterio real, no comentarios decorativos.
+- Al final del archivo añade una sección visible llamada "Postmortem del diseñador".
 
-No hagas una demo muerta; debe ser jugable de verdad.
-No hagas un clon genérico de tower defense o clicker.
-No uses canvas si no lo necesitas; elige la arquitectura más inteligente.
-Si simplificas algo, que sea con criterio de diseñador senior.
-No quiero una lluvia de features; quiero un núcleo fuerte.
-Entrega solo el código completo.</div>
+Reglas:
+- No hagas una demo muerta; debe ser jugable de verdad.
+- No hagas un clon genérico de tower defense o clicker.
+- No uses canvas si no lo necesitas; elige la arquitectura más inteligente.
+- Si simplificas algo, que sea con criterio de diseñador senior.
+- No quiero una lluvia de features; quiero un núcleo fuerte.
+- Entrega solo el código completo.</div>
         </div>
 
-        <!-- SECCIÓN 3: RADAR / LECTOR DE CARPETAS AUTOMÁTICO -->
-        <div class="scanner-section">
+        <!-- SECCIÓN 3: LECTOR DE CARPETAS -->
+        <div class="panel scanner-section">
             <h2>🕹️ Galería de Prototipos Disponibles</h2>
             <p class="subtitle">Este cargador asíncrono mapea las carpetas del repositorio en tiempo real e indexa de forma dinámica los juegos instalados.</p>
             
+            <div class="info-banner" id="info-banner">
+                ⚠️ Mostrando catálogo de demostración. Sube tus carpetas de juegos al repositorio para verlos aquí.
+            </div>
+
             <div class="arcade-grid" id="dynamic-arcade-grid">
-                <div class="no-games-msg" id="loading-msg">Mapeando directorios del repositorio de GitHub...</div>
+                <div class="no-games-msg" id="loading-msg">⏳ Mapeando directorios del repositorio...</div>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPT DE DETECCIÓN POR API DE GITHUB -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Extraer de forma automatizada los parámetros de la URL pública de tu GitHub Pages
-            const currentUrl = window.location.hostname;
+        // ============================================
+        // CONFIGURACIÓN DEL PORTAL
+        // ============================================
+        
+        // 🎮 CATÁLOGO DE DEMOSTRACIÓN (se muestra cuando la API falla o no hay juegos)
+        // Puedes editar este array para añadir tus propios juegos manualmente
+        const DEMO_GAMES = [
+            {
+                name: "Last Lightkeeper",
+                icon: "🏮",
+                description: "El último farero",
+                href: "Last-Lightkeeper/index.html"
+            },
+            {
+                name: "Neon Drift",
+                icon: "🏎️",
+                description: "Carreras arcade",
+                href: "Neon-Drift/index.html"
+            },
+            {
+                name: "Pixel Invaders",
+                icon: "👾",
+                description: "Shooter retro",
+                href: "Pixel-Invaders/index.html"
+            },
+            {
+                name: "Dungeon Crawler",
+                icon: "🗡️",
+                description: "Roguelike",
+                href: "Dungeon-Crawler/index.html"
+            },
+            {
+                name: "Puzzle Matrix",
+                icon: "🧩",
+                description: "Puzzle lógico",
+                href: "Puzzle-Matrix/index.html"
+            },
+            {
+                name: "Storm Rider",
+                icon: "⚡",
+                description: "Acción bajo presión",
+                href: "Storm-Rider/index.html"
+            }
+        ];
+
+        // Usuario y repositorio por defecto (cámbialo por el tuyo)
+        const DEFAULT_USERNAME = "CoqueTornado";
+        const DEFAULT_REPO = "nombre-de-tu-repositorio";
+
+        // ============================================
+        // UTILIDADES DE UI
+        // ============================================
+        
+        function setStatus(state, text) {
+            const dot = document.getElementById("status-dot");
+            const txt = document.getElementById("status-text");
+            dot.className = "status-dot " + state;
+            txt.innerHTML = text;
+        }
+
+        function renderGames(games, isDemoMode = false) {
+            const grid = document.getElementById("dynamic-arcade-grid");
+            grid.innerHTML = "";
+
+            if (games.length === 0) {
+                grid.innerHTML = `<div class="no-games-msg">No se han detectado carpetas de videojuegos todavía.<br>Sube carpetas en el root del repositorio y coloca su <code>index.html</code> dentro.</div>`;
+                return;
+            }
+
+            games.forEach(game => {
+                const card = document.createElement("a");
+                card.className = "game-card";
+                card.href = game.href;
+                
+                const tagClass = isDemoMode ? "demo" : "";
+                const tagText = isDemoMode ? "Demo" : "Disponible";
+                
+                card.innerHTML = `
+                    <div class="game-icon">${game.icon}</div>
+                    <div class="game-title">${game.name.replace(/-/g, " ").replace(/_/g, " ")}</div>
+                    <div class="game-tag ${tagClass}">${tagText}</div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function showDemoMode() {
+            document.getElementById("info-banner").classList.add("visible");
+            setStatus("demo", "<strong>Modo demostración</strong> · Catálogo de ejemplo");
+            renderGames(DEMO_GAMES, true);
+        }
+
+        // ============================================
+        // LÓGICA DE DETECCIÓN DE GITHUB
+        // ============================================
+        
+        function detectRepoInfo() {
+            const hostname = window.location.hostname;
             const pathName = window.location.pathname;
             
-            let username = "CoqueTornado"; // Usuario base extraído de tus capturas previas
-            let repoName = "";
+            let username = DEFAULT_USERNAME;
+            let repoName = DEFAULT_REPO;
 
-            // Verificar si el archivo corre directamente desde el servidor web de GitHub Pages
-            if (currentUrl.includes("github.io")) {
-                username = currentUrl.split(".")[0];
+            if (hostname.includes("github.io")) {
+                username = hostname.split(".")[0];
                 const segments = pathName.split("/").filter(s => s.length > 0);
                 if (segments.length > 0) {
                     repoName = segments[0];
                 }
             }
 
-            // Fallback por si estás probando de forma local en el editor
-            if (!repoName) {
-                repoName = "nombre-de-tu-repositorio"; 
-            }
+            return { username, repoName };
+        }
+
+        async function fetchGamesFromGitHub() {
+            const { username, repoName } = detectRepoInfo();
+            setStatus("connected", `<strong>Conectando</strong> · ${username}/${repoName}`);
 
             const apiUrl = `https://api.github.com/repos/${username}/${repoName}/contents/`;
-            const gridContainer = document.getElementById("dynamic-arcade-grid");
+            
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const items = await response.json();
+                const folders = items
+                    .filter(item => item.type === "dir" && !item.name.startsWith("."))
+                    .map(folder => ({
+                        name: folder.name,
+                        icon: ["🕹️", "🎮", "👾", "🎲", "⚡"][Math.floor(Math.random() * 5)],
+                        href: `${folder.name}/index.html`
+                    }));
 
-            fetch(apiUrl)
-                .then(response => {
-                    if (!response.ok) throw new Error("Error en la conexión con la API de GitHub.");
-                    return response.json();
-                })
-                .then(items => {
-                    // Filtrar directorios válidos, excluyendo archivos sueltos y carpetas del sistema (.git)
-                    const folders = items.filter(item => item.type === "dir" && !item.name.startsWith("."));
-                    
-                    if (folders.length === 0) {
-                        gridContainer.innerHTML = `<div class="no-games-msg">No se han detectado carpetas de videojuegos todavía. Sube carpetas en el root (ej: "Last-Lightkeeper") y coloca su index.html dentro para verlos aquí.</div>`;
-                        return;
-                    }
+                if (folders.length === 0) {
+                    showDemoMode();
+                } else {
+                    setStatus("connected", `<strong>Conectado</strong> · ${folders.length} juego(s) detectado(s)`);
+                    renderGames(folders, false);
+                }
+            } catch (error) {
+                console.warn("No se pudo conectar con la API de GitHub:", error.message);
+                showDemoMode();
+            }
+        }
 
-                    gridContainer.innerHTML = ""; // Limpiar el aviso de carga
-
-                    // Renderizar las tarjetas reactivas
-                    folders.forEach(folder => {
-                        const card = document.createElement("a");
-                        card.className = "game-card";
-                        
-                        // Configura la ruta relativa para abrir el index.html interno de esa carpeta
-                        card.href = `${folder.name}/index.html`;
-                        
-                        // Rotación de iconos arcade estéticos
-                        const arcadeIcons = ["🕹️", "🎮", "👾", "🎲", "⚡"];
-                        const pickedIcon = arcadeIcons[Math.floor(Math.random() * arcadeIcons.length)];
-                        
-                        card.innerHTML = `
-                            <div class="game-icon">${pickedIcon}</div>
-                            <div class="game-title">${folder.name.replace(/-/g, " ").replace(/_/g, " ")}</div>
-                        `;
-                        
-                        gridContainer.appendChild(card);
-                    });
-                })
-                .catch(error => {
-                    console.error("Error al escanear los archivos del repositorio:", error);
-                    gridContainer.innerHTML = `<div class="no-games-msg">Aviso: El lector automático de carpetas se inicializará completamente una vez que subas cambios y accedas desde el enlace público de tu GitHub Pages.</div>`;
-                });
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            // Pequeño retraso para simular carga y mostrar el estado
+            setTimeout(fetchGamesFromGitHub, 600);
         });
     </script>
 </body>
