@@ -1,514 +1,179 @@
-y este? <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Last Lightkeeper</title>
+    <title>Mi Arcade y Reglas de Diseño</title>
     <style>
-        :root {
-            --bg-dark: #050a14;
-            --bg-ocean: #0a1525;
-            --fuel-critical: #ff3333;
-            --fuel-low: #ffaa00;
-            --fuel-high: #00cc66;
-            --text-main: #e0e8f0;
-            --text-dim: #7a8a9a;
-            --ship-merchant: #4a90e2;
-            --ship-smuggler: #d32f2f;
-            --ship-war: #546e7a;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
-
         body {
-            background: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Courier New', Courier, monospace;
-            overflow: hidden;
-            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121214;
+            color: #ffffff;
+            margin: 0;
+            padding: 40px 20px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
         }
 
-        #game-container {
-            position: relative;
-            width: 100%;
-            max-width: 900px;
-            height: 100vh;
-            max-height: 600px;
-            background: linear-gradient(to bottom, var(--bg-dark) 0%, var(--bg-ocean) 100%);
-            overflow: hidden;
-            border: 2px solid #1a2a3a;
-        }
-
-        /* UI Overlay */
-        #ui-layer {
-            position: absolute;
-            top: 0; left: 0; width: 100%;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            z-index: 10;
-            pointer-events: none;
-        }
-
-        .ui-panel {
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid #2a3a4a;
-            padding: 8px 12px;
-            border-radius: 4px;
-            pointer-events: auto;
-        }
-
-        .fuel-bar-container {
-            width: 200px;
-            height: 12px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            margin-top: 5px;
-            position: relative;
-        }
-
-        .fuel-bar {
-            height: 100%;
-            width: 100%;
-            background: var(--fuel-high);
-            transition: width 0.2s, background-color 0.5s;
-        }
-
-        .weather-indicator {
-            font-size: 14px;
-            color: var(--text-dim);
-            margin-top: 5px;
-        }
-
-        /* Lighthouse */
-        #lighthouse {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 120px;
-            background: linear-gradient(to top, #1a1a1a, #333);
-            border-radius: 4px 4px 0 0;
-            z-index: 5;
-        }
-
-        #lighthouse-light {
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 60px;
-            background: radial-gradient(circle, rgba(255,255,200,0.8) 0%, rgba(255,255,200,0.2) 40%, transparent 70%);
-            border-radius: 50%;
-            animation: flicker 3s infinite alternate;
-        }
-
-        @keyframes flicker {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(0.95); }
-        }
-
-        .lighthouse-beam {
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 400px;
-            height: 300px;
-            background: linear-gradient(to right, transparent, rgba(255,255,200,0.15), transparent);
-            clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
-            animation: rotateBeam 8s linear infinite;
-        }
-
-        @keyframes rotateBeam {
-            from { transform: translateX(-50%) rotate(0deg); }
-            to { transform: translateX(-50%) rotate(360deg); }
-        }
-
-        /* Ships */
-        .ship {
-            position: absolute;
-            bottom: 40px;
-            width: 80px;
-            height: 40px;
-            cursor: pointer;
-            transition: transform 0.1s;
-            z-index: 6;
-        }
-
-        .ship:hover { transform: scale(1.1); }
-
-        .ship-body {
-            width: 100%;
-            height: 20px;
-            background: #2a2a2a;
-            border-radius: 4px;
-            position: relative;
-        }
-
-        .ship-sail {
-            position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-bottom: 30px solid #4a4a4a;
-        }
-
-        .ship-merchant .ship-body { background: var(--ship-merchant); }
-        .ship-smuggler .ship-body { background: var(--ship-smuggler); }
-        .ship-war .ship-body { background: var(--ship-war); }
-
-        /* Rain */
-        #rain {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 4;
-            opacity: 0;
-            transition: opacity 1s;
-        }
-
-        .rain-drop {
-            position: absolute;
-            width: 1px;
-            height: 15px;
-            background: rgba(255,255,255,0.3);
-            animation: rainFall 0.5s linear infinite;
-        }
-
-        @keyframes rainFall {
-            from { transform: translateY(-100vh); }
-            to { transform: translateY(100vh); }
-        }
-
-        /* Modal */
-        #modal {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 20;
-        }
-
-        .modal-content {
-            background: #1a1a1a;
-            border: 2px solid #333;
+        /* Contenedor para las instrucciones y reglas */
+        .instructions-container {
+            background-color: #1a1a1e;
+            border: 1px solid #2e2e38;
+            border-radius: 12px;
             padding: 30px;
-            text-align: center;
-            max-width: 400px;
-        }
-
-        .modal-content h1 { color: var(--fuel-high); margin-bottom: 10px; }
-        .modal-content p { margin-bottom: 20px; color: var(--text-dim); }
-        .btn {
-            background: #333;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-family: inherit;
-            transition: background 0.2s;
-        }
-        .btn:hover { background: #444; }
-
-        /* Postmortem */
-        #postmortem {
-            margin-top: 40px;
-            padding: 20px;
-            background: #1a1a1a;
-            border: 1px solid #333;
             max-width: 800px;
-            width: 90%;
-        }
-        #postmortem h2 { color: var(--fuel-high); margin-bottom: 15px; }
-        #postmortem p { margin-bottom: 10px; line-height: 1.6; }
-
-        /* Screen Shake */
-        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
+            width: 100%;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
 
-        /* Floating Text */
-        .float-text {
-            position: absolute;
-            color: var(--fuel-high);
+        h1, h2 {
+            color: #4f46e5;
+            margin-top: 0;
+        }
+
+        ol, ul {
+            padding-left: 20px;
+            line-height: 1.6;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .rules-highlight {
+            background-color: #251e36;
+            border-left: 4px solid #8b5cf6;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: #2e2e38;
+            margin: 40px 0;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        /* Contenedor de los videojuegos (Cuadraditos) */
+        .arcade-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .game-card {
+            background-color: #1e1e24;
+            border: 2px solid #2e2e38;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            transition: transform 0.2s, border-color 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 140px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: #4f46e5;
+            background-color: #25252e;
+        }
+
+        .game-icon {
+            font-size: 2.8rem;
+            margin-bottom: 12px;
+        }
+
+        .game-title {
             font-weight: bold;
-            animation: floatUp 1s forwards;
-            pointer-events: none;
-            z-index: 15;
-        }
-        @keyframes floatUp {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(-30px); }
+            font-size: 1.2rem;
         }
     </style>
 </head>
 <body>
 
-<div id="game-container">
-    <div id="ui-layer">
-        <div class="ui-panel">
-            <div>CARBURANTE</div>
-            <div class="fuel-bar-container">
-                <div class="fuel-bar" id="fuel-bar"></div>
-            </div>
-        </div>
-        <div class="ui-panel">
-            <div>CLIMA</div>
-            <div class="weather-indicator" id="weather-text">CALMA</div>
+    <!-- SECCIÓN 1: INSTRUCCIONES Y REGLAS -->
+    <div class="instructions-container">
+        <h2>📋 Criterios de Evaluación del Juego</h2>
+        <ol>
+            <li>Debe existir un bucle central claro, entendible y adictivo en menos de 30 segundos.</li>
+            <li>Debe haber al menos 3 sistemas que interactúen:
+                <ul>
+                    <li>combustible de la luz</li>
+                    <li>estado del clima</li>
+                    <li>tráfico marítimo o eventos de barcos</li>
+                </ul>
+            </li>
+            <li>El jugador debe tomar decisiones bajo presión, no solo hacer clics.</li>
+            <li>Debe haber al menos una mecánica de riesgo/recompensa.</li>
+            <li>Debe existir una condición de derrota y una forma clara de remontar si juegas bien.</li>
+            <li>La interfaz debe ser legible y visualmente cuidada, aunque sea simple.</li>
+            <li>Escribe microtexto de calidad:
+                <ul>
+                    <li>título</li>
+                    <li>subtítulo</li>
+                    <li>instrucciones integradas en la interfaz</li>
+                    <li>5 eventos breves con personalidad</li>
+                </ul>
+            </li>
+            <li>Añade una capa de "juice":
+                <ul>
+                    <li>animaciones sencillas</li>
+                    <li>feedback visual claro</li>
+                    <li>sensación de tensión creciente</li>
+                </ul>
+            </li>
+            <li>El código debe estar organizado y comentado con criterio real, no comentarios decorativos.</li>
+            <li>Al final del archivo añade una sección visible llamada "Postmortem del diseñador" donde expliques:
+                <ul>
+                    <li>cuál es la fantasía central del juego</li>
+                    <li>qué sistema es el más frágil</li>
+                    <li>qué recortarías primero si tuvieras que convertirlo en un juego comercial pequeño</li>
+                </ul>
+            </li>
+        </ol>
+
+        <div class="rules-highlight">
+            <strong>⚠️ Reglas Estrictas:</strong>
+            <ul>
+                <li>No hagas una demo técnica; debe ser jugable de verdad.</li>
+                <li>No hagas un clon genérico de tower defense o clicker.</li>
+                <li>No uses canvas si no lo necesitas; elige la arquitectura más inteligente.</li>
+                <li>Si simplificas algo, que sea con criterio de diseñador senior.</li>
+                <li>No quiero una lluvia de features; quiero un núcleo fuerte.</li>
+            </ul>
+            <p style="margin-top: 15px; font-weight: bold; color: #8b5cf6;">Entrega solo el código completo.</p>
         </div>
     </div>
 
-    <div id="lighthouse">
-        <div id="lighthouse-light"></div>
-        <div class="lighthouse-beam"></div>
+    <hr>
+
+    <!-- SECCIÓN 2: TU PORTAL DE JUEGOS (LOS CUADRADITOS) -->
+    <h2 style="margin-bottom: 25px;">🕹️ Acceso Directo a los Juegos</h2>
+    
+    <div class="arcade-grid">
+
+        <!-- Cuadradito del Juego 1 -->
+        <a href="juego1/juego.html" class="game-card">
+            <div class="game-icon">🐍</div>
+            <div class="game-title">Juego de la Serpiente</div>
+        </a>
+
+        <!-- Puedes clonar el bloque de arriba para añadir más juegos en el futuro -->
+
     </div>
-
-    <div id="rain"></div>
-    <div id="ships-container"></div>
-
-    <div id="modal">
-        <div class="modal-content">
-            <h1>LAST LIGHTKEEPER</h1>
-            <p>El último farero de un archipiélago en ruinas.</p>
-            <p>Haz clic en los barcos para obtener combustible. Los mercantes son seguros, los contrabandistas dan mucho pero atraen tormentas, los buques de guerra pueden salvarte o robarte.</p>
-            <button class="btn" onclick="game.start()">ENCENDER EL FARO</button>
-        </div>
-    </div>
-</div>
-
-<div id="postmortem">
-    <h2>Postmortem del diseñador</h2>
-    <p><strong>Fantasía central:</strong> La soledad y la responsabilidad de mantener la luz viva contra fuerzas abrumadoras. El jugador no es un héroe, es un custodio que debe tomar decisiones morales bajo presión.</p>
-    <p><strong>Sistema más frágil:</strong> El sistema de clima. Actualmente es un modificador de probabilidad simple. En un juego real, necesitaría pathfinding dinámico para los barcos y un sistema de iluminación que afecte la visibilidad del jugador, no solo el consumo de combustible.</p>
-    <p><strong>Primera cosa a recortar:</strong> La mecánica del buque de guerra. Es demasiado binaria (robar combustible o repeler tormentas). Se reemplazaría por un sistema de "Aviso de tormenta" que da un pequeño bono de combustible si el jugador reacciona rápido, eliminando la ambigüedad de la decisión.</p>
-</div>
-
-<script>
-    const game = {
-        fuel: 100,
-        maxFuel: 100,
-        weather: 'calma', // calma, niebla, tormenta
-        isRunning: false,
-        ships: [],
-        lastShipSpawn: 0,
-        shipSpawnRate: 5000,
-        fuelDrainRate: 0.1,
-        stormFuelDrainRate: 0.3,
-        rainInterval: null,
-
-        init() {
-            this.updateUI();
-            this.setupRain();
-        },
-
-        start() {
-            document.getElementById('modal').classList.add('hidden');
-            this.isRunning = true;
-            this.fuel = 100;
-            this.weather = 'calma';
-            this.lastShipSpawn = Date.now();
-            this.gameLoop();
-        },
-
-        gameLoop() {
-            if (!this.isRunning) return;
-
-            const now = Date.now();
-
-            // Fuel depletion
-            const drainRate = this.weather === 'tormenta' ? this.stormFuelDrainRate : this.fuelDrainRate;
-            this.fuel -= drainRate;
-
-            // Check defeat
-            if (this.fuel <= 0) {
-                this.gameOver();
-                return;
-            }
-
-            // Spawn ships
-            if (now - this.lastShipSpawn > this.shipSpawnRate) {
-                this.spawnShip();
-                this.lastShipSpawn = now;
-            }
-
-            // Update ships
-            this.updateShips();
-
-            // Update UI
-            this.updateUI();
-
-            requestAnimationFrame(() => this.gameLoop());
-        },
-
-        spawnShip() {
-            const types = ['merchant', 'smuggler', 'war'];
-            const weights = [0.5, 0.3, 0.2];
-            const rand = Math.random();
-            let type = 'merchant';
-            if (rand < weights[1]) type = 'smuggler';
-            else if (rand < weights[1] + weights[2]) type = 'war';
-
-            const ship = {
-                id: Date.now() + Math.random(),
-                type,
-                x: -100,
-                speed: 1 + Math.random() * 2,
-                element: null
-            };
-
-            this.ships.push(ship);
-            this.createShipElement(ship);
-        },
-
-        createShipElement(ship) {
-            const el = document.createElement('div');
-            el.className = `ship ship-${ship.type}`;
-            el.style.left = `${ship.x}px`;
-            el.innerHTML = `
-                <div class="ship-sail"></div>
-                <div class="ship-body"></div>
-            `;
-            el.addEventListener('click', () => this.interactWithShip(ship));
-            document.getElementById('ships-container').appendChild(el);
-            ship.element = el;
-        },
-
-        updateShips() {
-            for (let i = this.ships.length - 1; i >= 0; i--) {
-                const ship = this.ships[i];
-                ship.x += ship.speed;
-                ship.element.style.left = `${ship.x}px`;
-
-                // Remove if off-screen
-                if (ship.x > window.innerWidth + 100) {
-                    ship.element.remove();
-                    this.ships.splice(i, 1);
-                }
-            }
-        },
-
-        interactWithShip(ship) {
-            if (!this.isRunning) return;
-
-            // Remove ship
-            ship.element.remove();
-            const index = this.ships.indexOf(ship);
-            if (index > -1) this.ships.splice(index, 1);
-
-            // Apply effects based on type
-            switch (ship.type) {
-                case 'merchant':
-                    this.fuel = Math.min(this.maxFuel, this.fuel + 20);
-                    this.showFloatText('+20', ship.x, 40);
-                    if (this.weather === 'tormenta') this.changeWeather('calma');
-                    break;
-                case 'smuggler':
-                    this.fuel = Math.min(this.maxFuel, this.fuel + 50);
-                    this.showFloatText('+50', ship.x, 40);
-                    if (Math.random() < 0.5) this.changeWeather('tormenta');
-                    break;
-                case 'war':
-                    if (this.weather === 'tormenta') {
-                        this.fuel = Math.min(this.maxFuel, this.fuel + 30);
-                        this.showFloatText('+30', ship.x, 40);
-                        this.changeWeather('calma');
-                    } else {
-                        this.fuel = Math.max(0, this.fuel - 10);
-                        this.showFloatText('-10', ship.x, 40);
-                    }
-                    break;
-            }
-
-            // Screen shake on storm
-            if (this.weather === 'tormenta') {
-                document.getElementById('game-container').classList.add('shake');
-                setTimeout(() => document.getElementById('game-container').classList.remove('shake'), 500);
-            }
-        },
-
-        changeWeather(newWeather) {
-            this.weather = newWeather;
-            const weatherText = document.getElementById('weather-text');
-            weatherText.textContent = newWeather.toUpperCase();
-            weatherText.style.color = newWeather === 'tormenta' ? '#ff3333' : newWeather === 'niebla' ? '#7a8a9a' : '#00cc66';
-
-            // Update rain
-            const rainContainer = document.getElementById('rain');
-            if (newWeather === 'tormenta') {
-                rainContainer.style.opacity = 1;
-            } else {
-                rainContainer.style.opacity = 0;
-            }
-        },
-
-        showFloatText(text, x, y) {
-            const el = document.createElement('div');
-            el.className = 'float-text';
-            el.textContent = text;
-            el.style.left = `${x}px`;
-            el.style.top = `${y}px`;
-            document.getElementById('game-container').appendChild(el);
-            setTimeout(() => el.remove(), 1000);
-        },
-
-        updateUI() {
-            const fuelBar = document.getElementById('fuel-bar');
-            const fuelPercent = (this.fuel / this.maxFuel) * 100;
-            fuelBar.style.width = `${fuelPercent}%`;
-
-            // Color changes based on fuel level
-            if (fuelPercent < 20) {
-                fuelBar.style.backgroundColor = 'var(--fuel-critical)';
-                document.getElementById('lighthouse-light').style.animation = 'flicker 0.5s infinite alternate';
-            } else if (fuelPercent < 50) {
-                fuelBar.style.backgroundColor = 'var(--fuel-low)';
-                document.getElementById('lighthouse-light').style.animation = 'flicker 1s infinite alternate';
-            } else {
-                fuelBar.style.backgroundColor = 'var(--fuel-high)';
-                document.getElementById('lighthouse-light').style.animation = 'flicker 3s infinite alternate';
-            }
-        },
-
-        gameOver() {
-            this.isRunning = false;
-            document.getElementById('modal').classList.remove('hidden');
-            document.querySelector('.modal-content h1').textContent = 'FARO APAGADO';
-            document.querySelector('.modal-content p').textContent = `El combustible se agotó. Sobreviviste ${Math.floor((Date.now() - this.lastShipSpawn) / 1000)} segundos.`;
-            document.querySelector('.btn').textContent = 'REINTENTAR';
-        },
-
-        setupRain() {
-            const rainContainer = document.getElementById('rain');
-            for (let i = 0; i < 50; i++) {
-                const drop = document.createElement('div');
-                drop.className = 'rain-drop';
-                drop.style.left = `${Math.random() * 100}%`;
-                drop.style.animationDelay = `${Math.random() * 0.5}s`;
-                rainContainer.appendChild(drop);
-            }
-        }
-    };
-
-    game.init();
-</script>
 
 </body>
-</html> 
-he usado un prompt algo menos genérico
+</html>
