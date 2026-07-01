@@ -307,6 +307,189 @@
 
         .info-banner.visible { display: block; }
 
+        /* ===== MASTER TABLE SECTION ===== */
+        .analysis-section {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 35px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 10px;
+            border: 1px solid var(--panel-border);
+            margin-bottom: 30px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-blue) var(--bg-dark);
+        }
+
+        .table-wrapper::-webkit-scrollbar {
+            height: 8px;
+        }
+        .table-wrapper::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: var(--accent-blue);
+            border-radius: 4px;
+        }
+
+        .master-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 900px;
+        }
+
+        .master-table thead {
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.15), rgba(167, 139, 250, 0.15));
+            position: sticky;
+            top: 0;
+        }
+
+        .master-table th {
+            padding: 14px 10px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            border-bottom: 2px solid var(--panel-border);
+            white-space: nowrap;
+        }
+
+        .master-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid rgba(42, 53, 85, 0.5);
+            color: var(--text-main);
+        }
+
+        .master-table tbody tr {
+            transition: background 0.2s;
+        }
+
+        .master-table tbody tr:hover {
+            background: rgba(96, 165, 250, 0.05);
+        }
+
+        .master-table tbody tr.row-gold { background: rgba(251, 191, 36, 0.08); }
+        .master-table tbody tr.row-silver { background: rgba(167, 139, 250, 0.06); }
+        .master-table tbody tr.row-bronze { background: rgba(244, 114, 182, 0.05); }
+
+        .pos-cell {
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .version-cell {
+            font-weight: 700;
+            color: var(--accent-cyan);
+            font-family: 'Courier New', monospace;
+        }
+
+        .score-cell {
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            white-space: nowrap;
+        }
+
+        .score-trophy {
+            color: var(--accent-amber);
+            font-weight: 800;
+        }
+
+        .score-fail {
+            color: var(--accent-red);
+            opacity: 0.8;
+        }
+
+        .global-score {
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--accent-green);
+        }
+
+        /* INSIGHTS */
+        .insights-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+            color: var(--accent-cyan);
+            letter-spacing: 1px;
+        }
+
+        .insights-subtitle {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 25px 0 12px;
+        }
+
+        .insight-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .insight-list li {
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.05), rgba(167, 139, 250, 0.03));
+            border-left: 3px solid var(--accent-purple);
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            border-radius: 0 8px 8px 0;
+            line-height: 1.5;
+        }
+
+        .insight-list li strong {
+            color: var(--accent-amber);
+        }
+
+        .insight-list li em {
+            color: var(--text-muted);
+            font-style: normal;
+            font-size: 0.85rem;
+        }
+
+        .winners-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .winner-card {
+            background: rgba(52, 211, 153, 0.06);
+            border: 1px solid rgba(52, 211, 153, 0.25);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+
+        .winner-discipline {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .winner-name {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--accent-green);
+            margin-bottom: 4px;
+        }
+
+        .winner-reason {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
         /* FOOTER */
         .footer {
             text-align: center;
@@ -321,7 +504,7 @@
             body { padding: 20px 15px; }
             .hero h1 { font-size: 2rem; }
             .hero { padding: 35px 20px; }
-            .games-section { padding: 25px 20px; }
+            .games-section, .analysis-section { padding: 25px 20px; }
             .arcade-grid { grid-template-columns: 1fr; }
         }
     </style>
@@ -333,7 +516,7 @@
     <!-- HERO -->
     <div class="hero">
         <h1>🎮 LLM Test Plaza</h1>
-        <p class="subtitle">Portal de Prototipos · Inteligencia Aplicada a Videojuegos</p>
+        <p class="subtitle">Portal de Prototipos · Inteligencia Aplicada A Videojuegos</p>
         <div class="badge" id="heroBadge">Arcade Operativo</div>
     </div>
 
@@ -372,6 +555,225 @@
         <div class="arcade-grid" id="arcadeGrid">
             <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">
                 ⏳ Cargando juegos...
+            </div>
+        </div>
+    </div>
+
+    <!-- 📊 SECCIÓN DE ANÁLISIS COMPARATIVO -->
+    <div class="analysis-section">
+        <div class="section-header">
+            <div class="section-title">
+                <span>📊</span>
+                <h2>Análisis Comparativo</h2>
+            </div>
+            <span class="game-count" style="background:rgba(167,139,250,0.15);color:var(--accent-purple);">12 VERSIONES</span>
+        </div>
+
+        <h3 class="insights-title">🏆 Tabla Maestra de Todas las Versiones</h3>
+
+        <div class="table-wrapper">
+            <table class="master-table">
+                <thead>
+                    <tr>
+                        <th>Pos</th>
+                        <th>Versión</th>
+                        <th>Modelo</th>
+                        <th>Prompt</th>
+                        <th>Optimización</th>
+                        <th>Diseño</th>
+                        <th>Arquitectura</th>
+                        <th>Código</th>
+                        <th>Postmortem</th>
+                        <th>GLOBAL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="row-gold">
+                        <td class="pos-cell">🥇</td>
+                        <td class="version-cell">V9</td>
+                        <td>Google Flash 3.5</td>
+                        <td>Genérico</td>
+                        <td class="score-cell score-trophy">9.5/10 🏆</td>
+                        <td class="score-cell">7.5/10</td>
+                        <td class="score-cell">8/10</td>
+                        <td class="score-cell">8/10</td>
+                        <td class="score-cell">8.5/10</td>
+                        <td class="global-score">8/10</td>
+                    </tr>
+                    <tr class="row-silver">
+                        <td class="pos-cell">🥈</td>
+                        <td class="version-cell">V10</td>
+                        <td>Qwopus Q8</td>
+                        <td>Yūji Naka + temp 0.1</td>
+                        <td class="score-cell">6/10</td>
+                        <td class="score-cell">8/10</td>
+                        <td class="score-cell score-trophy">10/10 🏆</td>
+                        <td class="score-cell">8.5/10</td>
+                        <td class="score-cell">8.5/10</td>
+                        <td class="global-score">7.5/10</td>
+                    </tr>
+                    <tr class="row-bronze">
+                        <td class="pos-cell">🥉</td>
+                        <td class="version-cell">V11</td>
+                        <td>Qwen thinking distill</td>
+                        <td>Yūji Naka</td>
+                        <td class="score-cell">6/10</td>
+                        <td class="score-cell">8/10</td>
+                        <td class="score-cell score-trophy">10/10 🏆</td>
+                        <td class="score-cell">8.5/10</td>
+                        <td class="score-cell">8.5/10</td>
+                        <td class="global-score">7.5/10</td>
+                    </tr>
+                    <tr>
+                        <td class="pos-cell">4º</td>
+                        <td class="version-cell">V1</td>
+                        <td>Qwopus Q8</td>
+                        <td>Sin prompt</td>
+                        <td class="score-cell">6/10</td>
+                        <td class="score-cell">7.5/10</td>
+                        <td class="score-cell">7/10</td>
+                        <td class="score-cell">7/10</td>
+                        <td class="score-cell">7/10</td>
+                        <td class="global-score">7.5/10</td>
+                    </tr>
+                    <tr>
+                        <td class="pos-cell">5º</td>
+                        <td class="version-cell">V6</td>
+                        <td>Nemotron Super</td>
+                        <td>Prompt largo</td>
+                        <td class="score-cell">3/10</td>
+                        <td class="score-cell score-trophy">9.5/10 🏆</td>
+                        <td class="score-cell">7/10</td>
+                        <td class="score-cell">8.5/10</td>
+                        <td class="score-cell score-trophy">9.5/10 🏆</td>
+                        <td class="global-score">7/10</td>
+                    </tr>
+                    <tr>
+                        <td class="pos-cell">6º</td>
+                        <td class="version-cell">V4</td>
+                        <td>Qwopus Q8</td>
+                        <td>Prompt Sega</td>
+                        <td class="score-cell">7.5/10</td>
+                        <td class="score-cell">7/10</td>
+                        <td class="score-cell score-trophy">9/10 🏆</td>
+                        <td class="score-cell score-trophy">9/10 🏆</td>
+                        <td class="score-cell">7/10</td>
+                        <td class="global-score">7/10</td>
+                    </tr>
+                    <tr>
+                        <td class="pos-cell">7º</td>
+                        <td class="version-cell">V8</td>
+                        <td>Qwopus Q8</td>
+                        <td>Prompt genérico</td>
+                        <td class="score-cell">4/10</td>
+                        <td class="score-cell">8.5/10</td>
+                        <td class="score-cell">7.5/10</td>
+                        <td class="score-cell">7.5/10</td>
+                        <td class="score-cell">8/10</td>
+                        <td class="global-score">7/10</td>
+                    </tr>
+                    <tr>
+                        <td class="pos-cell">8º</td>
+                        <td class="version-cell">V3</td>
+                        <td>Qwopus Q8</td>
+                        <td>Látigo mejorado</td>
+                        <td class="score-cell">6.5/10</td>
+                        <td class="score-cell">6.5/10</td>
+                        <td class="score-cell">8.5/10</td>
+                        <td class="score-cell">8.5/10</td>
+                        <td class="score-cell">6/10</td>
+                        <td class="global-score">6.5/10</td>
+                    </tr>
+                    <tr>
+                        <td class="pos-cell">9º</td>
+                        <td class="version-cell">V12</td>
+                        <td>No especificado</td>
+                        <td>Yūji Naka</td>
+                        <td class="score-cell">4/10</td>
+                        <td class="score-cell">7/10</td>
+                        <td class="score-cell">7/10</td>
+                        <td class="score-cell">6/10</td>
+                        <td class="score-cell">7/10</td>
+                        <td class="global-score">6/10</td>
+                    </tr>
+                    <tr>
+                        <td class="pos-cell">10º</td>
+                        <td class="version-cell">V2</td>
+                        <td>Qwopus Q8</td>
+                        <td>Látigo corto</td>
+                        <td class="score-cell">4/10</td>
+                        <td class="score-cell">5.5/10</td>
+                        <td class="score-cell">7/10</td>
+                        <td class="score-cell">7/10</td>
+                        <td class="score-cell">6/10</td>
+                        <td class="global-score">5.5/10</td>
+                    </tr>
+                    <tr>
+                        <td class="pos-cell">11º</td>
+                        <td class="version-cell">V5</td>
+                        <td>Nemotron Super</td>
+                        <td>Prompt genérico</td>
+                        <td class="score-cell">4/10</td>
+                        <td class="score-cell">5/10</td>
+                        <td class="score-cell">7/10</td>
+                        <td class="score-cell">7/10</td>
+                        <td class="score-cell score-fail">❌</td>
+                        <td class="global-score">5.5/10</td>
+                    </tr>
+                    <tr>
+                        <td class="pos-cell">12º</td>
+                        <td class="version-cell">V7</td>
+                        <td>Qwen thinking distill</td>
+                        <td>Prompt largo</td>
+                        <td class="score-cell score-fail">0/10</td>
+                        <td class="score-cell score-fail">N/A</td>
+                        <td class="score-cell score-fail">0/10</td>
+                        <td class="score-cell score-fail">0/10</td>
+                        <td class="score-cell score-fail">N/A</td>
+                        <td class="global-score score-fail">2/10 ❌</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3 class="insights-title">🎯 Insights Clave de la Tabla</h3>
+        <h4 class="insights-subtitle">Patrones que emergen:</h4>
+
+        <ul class="insight-list">
+            <li><strong>Object Pool REAL</strong> solo lo hizo V9 (Flash 3.5) — <em>Ningún otro modelo lo logró sin prompt explícito</em></li>
+            <li><strong>Fixed timestep loop</strong> lo hicieron V10 y V11 — <em>Ambos con prompt de Yūji Naka</em></li>
+            <li><strong>Los prompts genéricos producen código mediocre</strong> — <em>V5, V8, V12 tienen problemas técnicos</em></li>
+            <li><strong>Los prompts específicos mejoran arquitectura pero no optimización</strong> — <em>V10, V11 tienen timestep perfecto pero no Object Pool</em></li>
+            <li><strong>La temperatura baja + prompt específico = mejor código</strong> — <em>V10 (temp 0.1) es mejor que V8 (temp default)</em></li>
+        </ul>
+
+        <h4 class="insights-subtitle">El modelo ganador por disciplina:</h4>
+
+        <div class="winners-grid">
+            <div class="winner-card">
+                <div class="winner-discipline">Optimización de memoria</div>
+                <div class="winner-name">V9 (Flash 3.5)</div>
+                <div class="winner-reason">Único con Object Pool real</div>
+            </div>
+            <div class="winner-card">
+                <div class="winner-discipline">Arquitectura de tiempo</div>
+                <div class="winner-name">V10 / V11</div>
+                <div class="winner-reason">Fixed timestep loop perfecto</div>
+            </div>
+            <div class="winner-card">
+                <div class="winner-discipline">Diseño de producto</div>
+                <div class="winner-name">V6 (Nemotron)</div>
+                <div class="winner-reason">Mecánica del Pulso con fuga permanente</div>
+            </div>
+            <div class="winner-card">
+                <div class="winner-discipline">Código limpio</div>
+                <div class="winner-name">V4 (Sega)</div>
+                <div class="winner-reason">Comentarios reales, data-driven</div>
+            </div>
+            <div class="winner-card">
+                <div class="winner-discipline">Postmortem técnico</div>
+                <div class="winner-name">V6 (Nemotron)</div>
+                <div class="winner-reason">Autocrítica con números exactos</div>
             </div>
         </div>
     </div>
